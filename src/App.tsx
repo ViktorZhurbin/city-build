@@ -1,4 +1,10 @@
-import { createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import {
+	createEffect,
+	createMemo,
+	createSignal,
+	onCleanup,
+	onMount,
+} from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 import "./App.css";
 import { CELL_COUNT, STARTING_MONEY } from "./CONFIG";
@@ -7,15 +13,22 @@ import { Hud } from "./components/Hud";
 import { Toolbar } from "./components/Toolbar";
 import { place } from "./logic/place";
 import { stats } from "./logic/stats";
+import { clearCity, loadCity, saveCity } from "./logic/storage";
 import { tick } from "./logic/tick";
 import type { Building, BuildingType, City } from "./types";
 
+const freshCity = (): City => ({
+	money: STARTING_MONEY,
+	buildings: [],
+	tick: 0,
+});
+
 const App = () => {
-	const [city, setCity] = createStore<City>({
-		money: STARTING_MONEY,
-		buildings: [],
-		tick: 0,
-	});
+	const [city, setCity] = createStore<City>(loadCity() ?? freshCity());
+
+	// Persist on every change. JSON.stringify reads each store property, so the
+	// effect re-runs whenever any of them updates — ticks, placements, money.
+	createEffect(() => saveCity(city));
 
 	const [selected, setSelected] = createSignal<BuildingType | null>(null);
 
@@ -38,6 +51,12 @@ const App = () => {
 		onCleanup(() => clearInterval(id));
 	});
 
+	function handleReset() {
+		clearCity();
+		setCity(reconcile(freshCity(), { key: "pos" }));
+		setSelected(null);
+	}
+
 	function handleTileClick(pos: number) {
 		const type = selected();
 
@@ -54,7 +73,7 @@ const App = () => {
 
 	return (
 		<div class="app">
-			<Hud stats={cityStats()} />
+			<Hud stats={cityStats()} onReset={handleReset} />
 			<Toolbar
 				selected={selected()}
 				money={city.money}

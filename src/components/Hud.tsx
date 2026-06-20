@@ -1,7 +1,7 @@
 import "./Hud.css";
 import type { CityStats } from "../logic/stats";
 
-export function Hud(props: { stats: CityStats }) {
+export function Hud(props: { stats: CityStats; onReset: () => void }) {
 	const cityStats = () => props.stats;
 
 	return (
@@ -32,6 +32,9 @@ export function Hud(props: { stats: CityStats }) {
 				<span class="hud-label">JOBS</span>
 				{cityStats().jobs}
 			</span>
+			<button type="button" class="hud-reset" onClick={() => props.onReset()}>
+				Reset
+			</button>
 		</div>
 	);
 }
