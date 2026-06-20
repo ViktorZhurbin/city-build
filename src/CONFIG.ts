@@ -8,8 +8,15 @@ export const STARTING_MONEY = 1000;
 // expense breakdown).
 export const TICKS_PER_DAY = 8;
 
+// Bulldozing hands back this fraction of the build cost — the escape hatch from
+// a broke/over-built city: raze, recover some cash, rebuild. Less than 1 so
+// overbuilding still stings.
+export const DEMOLISH_REFUND = 0.5;
+
 // --- Tuning knobs. This table IS the game's balance. ---
 // Everything interesting lives here; tweak numbers, not logic.
+// Only utilities carry `upkeep` — houses and stores are the tax base, never a
+// drain (SimCity's model: residential/commercial pay taxes, they don't bill).
 export const CONFIG = {
 	house: {
 		cost: 100,
@@ -17,7 +24,6 @@ export const CONFIG = {
 		waterUse: 1,
 		population: 4,
 		jobsNeeded: 0,
-		upkeep: 2,
 	},
 	store: {
 		cost: 150,
@@ -25,7 +31,6 @@ export const CONFIG = {
 		waterUse: 1,
 		population: 0,
 		jobsNeeded: 3,
-		upkeep: 3,
 		// Commerce is demand-bound: a store serves up to `customersServed`
 		// people (capped by total population), earning `taxPerCustomer` each
 		// per day. Tax is fixed for now. Later: expose it as a player-set rate

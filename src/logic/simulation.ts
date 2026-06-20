@@ -20,6 +20,14 @@ export const population = (buildings: Building[]) =>
 			building.type === "house" && building.powered && building.watered,
 	).length * CONFIG.house.population;
 
+// Total daily upkeep. Only utilities carry an `upkeep` field; houses and stores
+// are taxpayers, so they contribute nothing here.
+export const totalUpkeep = (buildings: Building[]) =>
+	buildings.reduce((sum, building) => {
+		const buildingConfig = CONFIG[building.type];
+		return sum + ("upkeep" in buildingConfig ? buildingConfig.upkeep : 0);
+	}, 0);
+
 // Customers actually served: each active store can serve up to
 // `customersServed` people, but the whole city can't serve more customers than
 // it has residents. This population cap is what bounds revenue — building
@@ -31,3 +39,9 @@ export const customersServed = (buildings: Building[]) => {
 
 	return Math.min(population(buildings), storeCapacity);
 };
+
+// Demand-bound commerce revenue: each served customer pays tax. Capped by
+// population via `customersServed`, so revenue is sublinear while upkeep is
+// linear — that's the optimal-city-size pressure.
+export const totalRevenue = (buildings: Building[]) =>
+	customersServed(buildings) * CONFIG.store.taxPerCustomer;

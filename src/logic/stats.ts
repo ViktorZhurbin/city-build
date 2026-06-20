@@ -1,9 +1,10 @@
 import { CONFIG, TICKS_PER_DAY } from "../CONFIG";
 import type { City } from "../types";
 import {
-	customersServed,
 	population,
 	powerSupply,
+	totalRevenue,
+	totalUpkeep,
 	waterSupply,
 } from "./simulation";
 
@@ -37,11 +38,8 @@ export function stats(city: City): CityStats {
 
 	// The budget the player would collect at the next day rollover, given the
 	// city as it stands right now: tax on served customers minus total upkeep.
-	const revenue = customersServed(city.buildings) * CONFIG.store.taxPerCustomer;
-	const upkeep = city.buildings.reduce(
-		(sum, building) => sum + CONFIG[building.type].upkeep,
-		0,
-	);
+	const revenue = totalRevenue(city.buildings);
+	const upkeep = totalUpkeep(city.buildings);
 
 	return {
 		jobs,

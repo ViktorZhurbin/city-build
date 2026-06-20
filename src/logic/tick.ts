@@ -1,9 +1,10 @@
 import { CONFIG, TICKS_PER_DAY } from "../CONFIG";
 import type { City } from "../types";
 import {
-	customersServed,
 	population,
 	powerSupply,
+	totalRevenue,
+	totalUpkeep,
 	waterSupply,
 } from "./simulation";
 
@@ -71,14 +72,12 @@ export function tick(city: City): City {
 		return { ...city, tick: tickCount, buildings: finalBuildings };
 	}
 
-	// Revenue is demand-bound commerce: each served customer pays tax. Profit is
-	// therefore capped by population while upkeep grows per building, so there's
-	// an optimal city size and overbuilding bleeds money.
-	const revenue = customersServed(finalBuildings) * CONFIG.store.taxPerCustomer;
-	const upkeep = finalBuildings.reduce(
-		(sum, building) => sum + CONFIG[building.type].upkeep,
-		0,
-	);
+	// Profit is revenue (capped by population) minus upkeep (linear in the city),
+	// so there's an optimal size and over-building utilities bleeds money.
+	// (Later: loans — borrow cash now against future days, repaid with interest
+	//  here in the settle. A depth/risk dial, deferred until the loop proves fun.)
+	const revenue = totalRevenue(finalBuildings);
+	const upkeep = totalUpkeep(finalBuildings);
 
 	return {
 		...city,

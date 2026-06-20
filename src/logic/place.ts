@@ -1,4 +1,4 @@
-import { CONFIG } from "../CONFIG";
+import { CONFIG, DEMOLISH_REFUND } from "../CONFIG";
 import type { BuildingType, City } from "../types";
 
 export function place(city: City, type: BuildingType, pos: number): City {
@@ -20,15 +20,19 @@ export function place(city: City, type: BuildingType, pos: number): City {
 	};
 }
 
-// Remove a building. No refund — bulldozing is the lever for digging out of an
-// overbuild (cut upkeep), not a way to recoup the build cost.
+// Remove a building, refunding a fraction of its cost. The refund is the escape
+// hatch from a broke/over-built city (raze, recover cash, rebuild); being below
+// 1 keeps overbuilding a net loss.
 export function demolish(city: City, pos: number): City {
 	const building = city.buildings.find((building) => building.pos === pos);
 
 	if (!building) return city;
 
+	const refund = Math.floor(CONFIG[building.type].cost * DEMOLISH_REFUND);
+
 	return {
 		...city,
+		money: city.money + refund,
 		buildings: city.buildings.filter((building) => building.pos !== pos),
 	};
 }
