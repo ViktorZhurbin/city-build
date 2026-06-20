@@ -1,0 +1,24 @@
+{
+	"name": "city-build-it",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "rsbuild build",
+		"dev": "rsbuild --open",
+		"preview": "rsbuild preview",
+		"check": "biome check --write .",
+		"types": "tsc"
+	},
+	"dependencies": {
+		"solid-js": "^1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.0",
+		"@rsbuild/core": "^2",
+		"@rsbuild/plugin-babel": "^2",
+		"@rsbuild/plugin-solid": "^1",
+		"@types/node": "^24",
+		"typescript": "^6"
+	}
+}
