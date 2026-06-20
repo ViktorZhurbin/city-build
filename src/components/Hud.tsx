@@ -1,0 +1,31 @@
+import "./Hud.css";
+import type { CityStats } from "../logic/stats";
+
+export function Hud(props: { stats: CityStats }) {
+	const cityStats = () => props.stats;
+
+	return (
+		<div class="hud">
+			<span class="hud-item">
+				<span class="hud-label">$</span>
+				{cityStats().money}
+			</span>
+			<span class="hud-item">
+				<span class="hud-label">PWR</span>
+				{cityStats().powerSupply}/{cityStats().powerDemand}
+			</span>
+			<span class="hud-item">
+				<span class="hud-label">H₂O</span>
+				{cityStats().waterSupply}/{cityStats().waterDemand}
+			</span>
+			<span class="hud-item">
+				<span class="hud-label">POP</span>
+				{cityStats().population}
+			</span>
+			<span class="hud-item">
+				<span class="hud-label">JOBS</span>
+				{cityStats().jobs}
+			</span>
+		</div>
+	);
+}

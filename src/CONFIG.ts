@@ -1,3 +1,7 @@
+export const GRID_SIZE = 10;
+export const CELL_COUNT = GRID_SIZE * GRID_SIZE;
+export const STARTING_MONEY = 700;
+
 // --- Tuning knobs. This table IS the game's balance. ---
 // Everything interesting lives here; tweak numbers, not logic.
 export const CONFIG = {
@@ -27,5 +31,5 @@ export const CONFIG = {
 		powerUse: 2,
 		waterUse: 0,
 		waterSupply: 10,
-	}, // note: water plant needs power
+	},
 } as const;

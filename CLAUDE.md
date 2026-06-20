@@ -12,6 +12,11 @@ The dependency chain is the engine:
 
 All tunable numbers live in the `CONFIG.ts`. Balance happens there, nowhere else.
 
+## Code style
+
+- **No single-letter variables.** Use descriptive names everywhere — parameters, locals, callbacks. `building` not `b`, `placed` not `x`, `cityStats` not `s`.
+- **Extract boolean expressions into named variables.** Pull non-trivial conditions out of `if` statements. `const cellOccupied = ...` then `if (cellOccupied)`, not an inline predicate.
+
 ## Commands
 
 ```bash

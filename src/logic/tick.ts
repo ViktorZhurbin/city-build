@@ -1,13 +1,12 @@
 import { CONFIG } from "../CONFIG";
 import type { City } from "../types";
+import { population, powerSupply, waterSupply } from "./simulation";
 
 export function tick(city: City): City {
 	// 1. Power: produced by power plants, then allocated greedily in placement
 	//    order. Whoever's first in the array gets served first; when supply runs
 	//    out, the rest go dark. (Placement order mattering is a feature.)
-	let powerLeft =
-		city.buildings.filter((building) => building.type === "power").length *
-		CONFIG.power.powerSupply;
+	let powerLeft = powerSupply(city.buildings);
 
 	const poweredBuildings = city.buildings.map((building) => {
 		const buildingConfig = CONFIG[building.type];
@@ -22,10 +21,7 @@ export function tick(city: City): City {
 
 	// 2. Water: only *powered* water plants produce any (a water plant needs
 	//    power), then allocated the same greedy way.
-	let waterLeft =
-		poweredBuildings.filter(
-			(building) => building.type === "water" && building.powered,
-		).length * CONFIG.water.waterSupply;
+	let waterLeft = waterSupply(poweredBuildings);
 
 	const suppliedBuildings = poweredBuildings.map((building) => {
 		const buildingConfig = CONFIG[building.type];
@@ -37,17 +33,10 @@ export function tick(city: City): City {
 		return { ...building, watered: isWatered };
 	});
 
-	// 3. Population comes only from houses that have BOTH utilities.
-	const population =
-		suppliedBuildings.filter(
-			(building) =>
-				building.type === "house" && building.powered && building.watered,
-		).length * CONFIG.house.population;
-
-	// 4. Jobs: only operable (powered + watered) stores compete for the labour
-	//    pool — a dark store employs no one. Once labour runs out, remaining
-	//    stores sit idle.
-	let availableLabour = population;
+	// 3. Jobs: population from operable houses seeds the labour pool; only
+	//    operable (powered + watered) stores compete for it. Once labour runs
+	//    out, remaining stores sit idle.
+	let availableLabour = population(suppliedBuildings);
 	const finalBuildings = suppliedBuildings.map((building) => {
 		if (building.type !== "store") {
 			return building;
@@ -55,16 +44,18 @@ export function tick(city: City): City {
 
 		const { store } = CONFIG;
 
-		const isOperable = building.powered && building.watered;
+		const isSupplied = building.powered && building.watered;
 		const isStaffed = availableLabour >= store.jobsNeeded;
-		if (isStaffed) {
+		const isActive = isSupplied && isStaffed;
+
+		if (isActive) {
 			availableLabour -= store.jobsNeeded;
 		}
 
-		return { ...building, active: isOperable && isStaffed };
+		return { ...building, active: isActive };
 	});
 
-	// 5. Money: profit from active stores.
+	// 4. Money: profit from active stores.
 	const income =
 		finalBuildings.filter(
 			(building) => building.type === "store" && building.active,

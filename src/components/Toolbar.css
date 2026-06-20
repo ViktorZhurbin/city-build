@@ -1,0 +1,54 @@
+.toolbar {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.tool-btn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	padding: 0.4rem 0.9rem;
+	border-radius: 6px;
+	border: 2px solid transparent;
+	cursor: pointer;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #fff;
+	background: #21262d;
+	transition:
+		border-color 80ms,
+		filter 80ms;
+}
+
+.tool-btn[data-type="house"] {
+	border-color: #2d5a27;
+}
+.tool-btn[data-type="store"] {
+	border-color: #5a4a00;
+}
+.tool-btn[data-type="power"] {
+	border-color: #5a1a1a;
+}
+.tool-btn[data-type="water"] {
+	border-color: #0d3a52;
+}
+
+.tool-btn[data-active="true"][data-type="house"] {
+	background: #2d5a27;
+}
+.tool-btn[data-active="true"][data-type="store"] {
+	background: #5a4a00;
+}
+.tool-btn[data-active="true"][data-type="power"] {
+	background: #5a1a1a;
+}
+.tool-btn[data-active="true"][data-type="water"] {
+	background: #0d3a52;
+}
+
+.tool-cost {
+	font-size: 0.7rem;
+	font-weight: 400;
+	opacity: 0.7;
+}

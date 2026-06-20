@@ -1,12 +1,12 @@
 import { CONFIG } from "../CONFIG";
 import type { BuildingType, City } from "../types";
 
-// Placing a building: just affordability + push.
-// No grid math needed (for now).
-export function place(city: City, type: BuildingType): City {
-	const cost = CONFIG[type].cost;
-	if (city.money < cost) {
-		// can't afford — no-op
+export function place(city: City, type: BuildingType, pos: number): City {
+	const cellOccupied = city.buildings.some((building) => building.pos === pos);
+
+	const { cost } = CONFIG[type];
+
+	if (cellOccupied || city.money < cost) {
 		return city;
 	}
 
@@ -15,7 +15,7 @@ export function place(city: City, type: BuildingType): City {
 		money: city.money - cost,
 		buildings: [
 			...city.buildings,
-			{ type, powered: false, watered: false, active: false },
+			{ type, pos, powered: false, watered: false, active: false },
 		],
 	};
 }

@@ -1,0 +1,24 @@
+.hud {
+	display: flex;
+	gap: 1.5rem;
+	background: #161b22;
+	border: 1px solid #30363d;
+	border-radius: 6px;
+	padding: 0.5rem 1.25rem;
+	font-size: 0.85rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.hud-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+}
+
+.hud-label {
+	font-size: 0.65rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	opacity: 0.5;
+}

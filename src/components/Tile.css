@@ -1,0 +1,40 @@
+.tile {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 0.8rem;
+	font-weight: 700;
+	color: #fff;
+	transition: filter 150ms;
+}
+
+.tile[data-type="empty"] {
+	background: #1b2436;
+	color: transparent;
+}
+
+.tile[data-type="empty"]:hover {
+	background: #243050;
+}
+
+.tile[data-type="house"] {
+	background: #3a7d44;
+}
+.tile[data-type="store"] {
+	background: #c98a00;
+}
+.tile[data-type="power"] {
+	background: #c0392b;
+}
+.tile[data-type="water"] {
+	background: #1a78a8;
+}
+
+.tile[data-dark="true"] {
+	filter: grayscale(0.7) brightness(0.4);
+}
