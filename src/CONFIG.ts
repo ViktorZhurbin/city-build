@@ -2,6 +2,12 @@ export const GRID_SIZE = 10;
 export const CELL_COUNT = GRID_SIZE * GRID_SIZE;
 export const STARTING_MONEY = 700;
 
+// The economy settles once per "day"; ticks in between only run the physical
+// sim (power/water/jobs). For now a day is a bare counter. Later: surface a
+// visible day number + an end-of-day budget sheet (SimCity-style revenue /
+// expense breakdown).
+export const TICKS_PER_DAY = 8;
+
 // --- Tuning knobs. This table IS the game's balance. ---
 // Everything interesting lives here; tweak numbers, not logic.
 export const CONFIG = {
@@ -11,6 +17,7 @@ export const CONFIG = {
 		waterUse: 1,
 		population: 4,
 		jobsNeeded: 0,
+		upkeep: 2,
 	},
 	store: {
 		cost: 150,
@@ -18,18 +25,27 @@ export const CONFIG = {
 		waterUse: 1,
 		population: 0,
 		jobsNeeded: 3,
-		profit: 12,
+		upkeep: 3,
+		// Commerce is demand-bound: a store serves up to `customersServed`
+		// people (capped by total population), earning `taxPerCustomer` each
+		// per day. Tax is fixed for now. Later: expose it as a player-set rate
+		// slider — the core income-vs-growth dial, where a higher rate raises
+		// revenue but suppresses demand/growth.
+		customersServed: 4,
+		taxPerCustomer: 6,
 	},
 	power: {
 		cost: 200,
 		powerUse: 0,
 		waterUse: 0,
 		powerSupply: 10,
+		upkeep: 6,
 	},
 	water: {
 		cost: 180,
 		powerUse: 2,
 		waterUse: 0,
 		waterSupply: 10,
+		upkeep: 5,
 	},
 } as const;

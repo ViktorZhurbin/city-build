@@ -19,3 +19,15 @@ export const population = (buildings: Building[]) =>
 		(building) =>
 			building.type === "house" && building.powered && building.watered,
 	).length * CONFIG.house.population;
+
+// Customers actually served: each active store can serve up to
+// `customersServed` people, but the whole city can't serve more customers than
+// it has residents. This population cap is what bounds revenue — building
+// stores past the supply of people earns nothing.
+export const customersServed = (buildings: Building[]) => {
+	const storeCapacity =
+		buildings.filter((building) => building.type === "store" && building.active)
+			.length * CONFIG.store.customersServed;
+
+	return Math.min(population(buildings), storeCapacity);
+};

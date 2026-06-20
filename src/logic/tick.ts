@@ -1,6 +1,11 @@
-import { CONFIG } from "../CONFIG";
+import { CONFIG, TICKS_PER_DAY } from "../CONFIG";
 import type { City } from "../types";
-import { population, powerSupply, waterSupply } from "./simulation";
+import {
+	customersServed,
+	population,
+	powerSupply,
+	waterSupply,
+} from "./simulation";
 
 export function tick(city: City): City {
 	// 1. Power: produced by power plants, then allocated greedily in placement
@@ -55,20 +60,30 @@ export function tick(city: City): City {
 		return { ...building, active: isActive };
 	});
 
-	// 4. Money: profit from active stores.
-	const income =
-		finalBuildings.filter(
-			(building) => building.type === "store" && building.active,
-		).length * CONFIG.store.profit;
+	// 4. Money: the budget settles ONCE per day, not every tick. In between,
+	//    ticks just keep the physical sim (power/water/jobs) current. The day is
+	//    a bare counter for now — later it can drive a visible day number and an
+	//    end-of-day budget sheet.
+	const tickCount = city.tick + 1;
+	const dayElapsed = tickCount % TICKS_PER_DAY === 0;
 
-	// (Optional later: upkeep cost per building, so idle buildings BLEED money
-	//  and overbuilding utilities has a downside. That single change is what
-	//  turns "build everything" into "build the right amount" — add it once the
-	//  basic loop feels alive.)
+	if (!dayElapsed) {
+		return { ...city, tick: tickCount, buildings: finalBuildings };
+	}
+
+	// Revenue is demand-bound commerce: each served customer pays tax. Profit is
+	// therefore capped by population while upkeep grows per building, so there's
+	// an optimal city size and overbuilding bleeds money.
+	const revenue = customersServed(finalBuildings) * CONFIG.store.taxPerCustomer;
+	const upkeep = finalBuildings.reduce(
+		(sum, building) => sum + CONFIG[building.type].upkeep,
+		0,
+	);
 
 	return {
 		...city,
-		money: city.money + income,
+		tick: tickCount,
+		money: city.money + revenue - upkeep,
 		buildings: finalBuildings,
 	};
 }

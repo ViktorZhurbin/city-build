@@ -9,4 +9,5 @@ export interface Building {
 export interface City {
 	money: number;
 	buildings: Building[];
+	tick: number; // ticks elapsed; the budget settles every TICKS_PER_DAY
 }

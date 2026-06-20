@@ -8,9 +8,21 @@ There is a grid. The player places one of **four building types**: House, Store,
 
 The dependency chain is the engine:
 
-> houses make people → people staff stores → stores make money → money buys utilities → utilities let you place more houses
+> houses make people → people staff AND shop at stores → stores' commerce is taxed for money → money pays utility upkeep + buys expansion → utilities let you place more houses
 
 All tunable numbers live in the `CONFIG.ts`. Balance happens there, nowhere else.
+
+## Design intent
+
+A stripped-down SimCity / Cities: Skylines. We borrow their three economic pillars and nothing else:
+
+1. Revenue is **demand-bound** — capped by `population` (`customersServed` in `simulation.ts`), so it's sublinear while upkeep is linear per building. The two cross → there's an optimal city size, and overbuilding bleeds money.
+2. **Utilities are sinks, never sources** — power/water cost to build _and_ an `upkeep` per day.
+3. **Growth follows demand** (the RCI loop): houses ≈ Residential, stores ≈ Commercial; no Industrial. Stores want people (workers + customers), houses want jobs + utilities.
+
+**Two clocks:** every ~1.5s a `tick()` runs the _physical_ sim (power → water → jobs allocation). Money only moves on the **day** boundary (`TICKS_PER_DAY`), when the budget settles as `revenue − upkeep`. The day is a bare counter today; see the "later" notes below.
+
+**Deliberately deferred** (noted inline where they'd go): a visible day number + end-of-day budget sheet; a player-set tax-rate slider (the income-vs-growth dial).
 
 ## Code style
 
@@ -20,7 +32,7 @@ All tunable numbers live in the `CONFIG.ts`. Balance happens there, nowhere else
 ## Commands
 
 ```bash
-bun run dev        # start dev server (http://localhost:3000)
+npm run dev        # start dev server (http://localhost:3000) - use NPM for dev
 bun run build      # production build
 bun run preview    # preview production build locally
 bun run check      # Biome (lint + format) and tsc (Biome writes fixes in place)

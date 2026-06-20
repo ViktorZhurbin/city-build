@@ -14,6 +14,7 @@ const App = () => {
 	const [city, setCity] = createStore<City>({
 		money: STARTING_MONEY,
 		buildings: [],
+		tick: 0,
 	});
 
 	const [selected, setSelected] = createSignal<BuildingType | null>(null);

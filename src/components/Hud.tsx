@@ -11,6 +11,12 @@ export function Hud(props: { stats: CityStats }) {
 				{cityStats().money}
 			</span>
 			<span class="hud-item">
+				<span class="hud-label">$/DAY</span>
+				{cityStats().dailyBudget >= 0
+					? `+${cityStats().dailyBudget}`
+					: cityStats().dailyBudget}
+			</span>
+			<span class="hud-item">
 				<span class="hud-label">PWR</span>
 				{cityStats().powerSupply}/{cityStats().powerDemand}
 			</span>
