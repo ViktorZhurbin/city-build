@@ -47,6 +47,11 @@
 	background: #0d3a52;
 }
 
+.tool-btn:disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+}
+
 .tool-cost {
 	font-size: 0.7rem;
 	font-weight: 400;

@@ -55,8 +55,16 @@ const App = () => {
 	return (
 		<div class="app">
 			<Hud stats={cityStats()} />
-			<Toolbar selected={selected()} onSelect={setSelected} />
-			<Grid cells={cells()} onTileClick={handleTileClick} />
+			<Toolbar
+				selected={selected()}
+				money={city.money}
+				onSelect={setSelected}
+			/>
+			<Grid
+				cells={cells()}
+				selected={selected()}
+				onTileClick={handleTileClick}
+			/>
 		</div>
 	);
 };
