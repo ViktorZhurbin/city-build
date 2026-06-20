@@ -25,3 +25,25 @@ export function Tooltip(props: {
 		</KobalteTooltip>
 	);
 }
+
+export interface StatLine {
+	label: string;
+	value: string;
+}
+
+// The shared tooltip body: a title over a list of label/value rows. Both the
+// toolbar (static CONFIG figures) and the tiles (live per-building numbers) feed
+// it, so the look stays identical wherever stats are surfaced.
+export function StatCard(props: { title: string; lines: StatLine[] }) {
+	return (
+		<div class="tooltip-stats">
+			<div class="tooltip-title">{props.title}</div>
+			{props.lines.map((line) => (
+				<div class="tooltip-row">
+					<span class="tooltip-label">{line.label}</span>
+					<span class="tooltip-value">{line.value}</span>
+				</div>
+			))}
+		</div>
+	);
+}

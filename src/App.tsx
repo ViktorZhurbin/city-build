@@ -6,6 +6,7 @@ import { Grid } from "./components/Grid";
 import { Hud } from "./components/Hud";
 import { Toolbar } from "./components/Toolbar";
 import { demolish, place } from "./logic/place";
+import { contributions } from "./logic/simulation";
 import { stats } from "./logic/stats";
 import { clearCity, loadCity, saveCity } from "./logic/storage";
 import { tick } from "./logic/tick";
@@ -41,6 +42,11 @@ const App = () => {
 	});
 
 	const cityStats = createMemo(() => stats(city));
+
+	// Live per-building numbers (population, upkeep, served customers, revenue)
+	// keyed by cell — feeds each tile's tooltip. Recomputed whenever buildings
+	// change, since served customers depend on the whole city, not one tile.
+	const tileStats = createMemo(() => contributions(city.buildings));
 
 	// Re-runs whenever speed changes: clears the old interval (via onCleanup) and
 	// starts one at the new rate, or none at all when paused.
@@ -92,6 +98,7 @@ const App = () => {
 			/>
 			<Grid
 				cells={cells()}
+				stats={tileStats()}
 				selected={selected()}
 				onTileClick={handleTileClick}
 			/>

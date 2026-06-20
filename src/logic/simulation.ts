@@ -45,3 +45,69 @@ export const customersServed = (buildings: Building[]) => {
 // linear — that's the optimal-city-size pressure.
 export const totalRevenue = (buildings: Building[]) =>
 	customersServed(buildings) * CONFIG.store.taxPerCustomer;
+
+// Per-store share of the city's customers: the global pool (`population`) is
+// handed out greedily in placement order — the same rule power/water/jobs use —
+// so each active store takes up to `customersServed` until the residents run
+// out. Keyed by store `pos`; the values sum to `customersServed(buildings)`.
+// This is what makes a single store's revenue well-defined: it's whatever this
+// store actually serves, not its capacity.
+export const customersByStore = (
+	buildings: Building[],
+): Map<number, number> => {
+	let customersLeft = population(buildings);
+	const servedByPos = new Map<number, number>();
+
+	for (const building of buildings) {
+		const isActiveStore = building.type === "store" && building.active;
+
+		if (!isActiveStore) {
+			continue;
+		}
+
+		const servedHere = Math.min(CONFIG.store.customersServed, customersLeft);
+
+		servedByPos.set(building.pos, servedHere);
+		customersLeft -= servedHere;
+	}
+
+	return servedByPos;
+};
+
+// What one building contributes to the city right now — the read model behind a
+// per-tile tooltip. All values are *live* (reflect the building's powered /
+// watered / active flags), not nominal CONFIG figures: a dark house makes 0
+// people, an over-saturated store earns $0 even at full capacity.
+export interface BuildingContribution {
+	population: number;
+	upkeep: number;
+	customers: number; // stores only: customers actually served this tick
+	revenue: number; // stores only: served customers × tax
+}
+
+// Builds the contribution for every placed building in one pass (the customer
+// attribution is computed once, then shared), keyed by `pos`.
+export const contributions = (
+	buildings: Building[],
+): Map<number, BuildingContribution> => {
+	const customersPerStore = customersByStore(buildings);
+	const byPos = new Map<number, BuildingContribution>();
+
+	for (const building of buildings) {
+		const buildingConfig = CONFIG[building.type];
+		const operable = building.powered && building.watered;
+
+		const populationHere =
+			building.type === "house" && operable ? CONFIG.house.population : 0;
+		const customers = customersPerStore.get(building.pos) ?? 0;
+
+		byPos.set(building.pos, {
+			population: populationHere,
+			upkeep: "upkeep" in buildingConfig ? buildingConfig.upkeep : 0,
+			customers,
+			revenue: customers * CONFIG.store.taxPerCustomer,
+		});
+	}
+
+	return byPos;
+};

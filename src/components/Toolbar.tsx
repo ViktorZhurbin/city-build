@@ -1,7 +1,7 @@
 import "./Toolbar.css";
 import { CONFIG, DEMOLISH_REFUND } from "../CONFIG";
 import type { BuildingType, Tool } from "../types";
-import { Tooltip } from "./Tooltip";
+import { StatCard, type StatLine, Tooltip } from "./Tooltip";
 
 const BUILDING_TYPES: BuildingType[] = ["house", "store", "power", "water"];
 const LABELS: Record<BuildingType, string> = {
@@ -68,25 +68,6 @@ export function Toolbar(props: {
 					Demolish
 				</button>
 			</Tooltip>
-		</div>
-	);
-}
-
-interface StatLine {
-	label: string;
-	value: string;
-}
-
-function StatCard(props: { title: string; lines: StatLine[] }) {
-	return (
-		<div class="tooltip-stats">
-			<div class="tooltip-title">{props.title}</div>
-			{props.lines.map((line) => (
-				<div class="tooltip-row">
-					<span class="tooltip-label">{line.label}</span>
-					<span class="tooltip-value">{line.value}</span>
-				</div>
-			))}
 		</div>
 	);
 }
