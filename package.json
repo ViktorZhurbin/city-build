@@ -12,6 +12,7 @@
 		"check": "bun lint-format && bun type-check"
 	},
 	"dependencies": {
+		"@kobalte/core": "^0.13.11",
 		"solid-js": "^1"
 	},
 	"devDependencies": {

@@ -1,5 +1,11 @@
 .toolbar {
 	display: flex;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.toolbar-buildings {
+	display: flex;
 	gap: 0.5rem;
 }
 
@@ -49,14 +55,20 @@
 
 .tool-btn:disabled {
 	opacity: 0.35;
-	cursor: not-allowed;
+	/* Let hover fall through to the Tooltip trigger wrapping the button, so the
+	   stats still show for buildings you can't yet afford. */
+	pointer-events: none;
 }
 
-/* Bulldozer sits apart from the build tools, with a danger-red theme. */
+/* Each button is wrapped in a Tooltip trigger span, so the demolish spacer and
+   the toolbar gap apply to the wrappers, not the buttons themselves. */
 .tool-btn-demolish {
-	margin-left: auto;
 	justify-content: center;
 	border-color: #5a1a1a;
+}
+
+.toolbar > .tooltip-trigger:last-child {
+	margin-left: auto;
 }
 
 .tool-btn-demolish[data-active="true"] {
