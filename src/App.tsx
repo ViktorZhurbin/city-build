@@ -1,10 +1,4 @@
-import {
-	createEffect,
-	createMemo,
-	createSignal,
-	onCleanup,
-	onMount,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 import "./App.css";
 import { CELL_COUNT, STARTING_MONEY } from "./CONFIG";
@@ -32,6 +26,10 @@ const App = () => {
 
 	const [selected, setSelected] = createSignal<BuildingType | null>(null);
 
+	// Tick speed as a multiplier; 0 means paused. Drives the sim interval below.
+	const [speed, setSpeed] = createSignal(1);
+	const BASE_TICK_MS = 1500;
+
 	const cells = createMemo<(Building | undefined)[]>(() => {
 		const slots: (Building | undefined)[] = new Array(CELL_COUNT);
 
@@ -44,10 +42,15 @@ const App = () => {
 
 	const cityStats = createMemo(() => stats(city));
 
-	onMount(() => {
+	// Re-runs whenever speed changes: clears the old interval (via onCleanup) and
+	// starts one at the new rate, or none at all when paused.
+	createEffect(() => {
+		const currentSpeed = speed();
+		if (currentSpeed === 0) return;
+
 		const id = setInterval(() => {
 			setCity(reconcile(tick(unwrap(city)), { key: "pos" }));
-		}, 1500);
+		}, BASE_TICK_MS / currentSpeed);
 		onCleanup(() => clearInterval(id));
 	});
 
@@ -73,7 +76,12 @@ const App = () => {
 
 	return (
 		<div class="app">
-			<Hud stats={cityStats()} onReset={handleReset} />
+			<Hud
+				stats={cityStats()}
+				speed={speed()}
+				onSpeed={setSpeed}
+				onReset={handleReset}
+			/>
 			<Toolbar
 				selected={selected()}
 				money={city.money}

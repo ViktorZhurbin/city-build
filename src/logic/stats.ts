@@ -1,4 +1,4 @@
-import { CONFIG } from "../CONFIG";
+import { CONFIG, TICKS_PER_DAY } from "../CONFIG";
 import type { City } from "../types";
 import {
 	customersServed,
@@ -16,6 +16,8 @@ export interface CityStats {
 	population: number;
 	jobs: number;
 	dailyBudget: number; // revenue - upkeep, applied once per day
+	day: number; // 1-based; the day currently in progress
+	dayProgress: number; // 0..1 toward the next budget settle
 }
 
 export function stats(city: City): CityStats {
@@ -50,5 +52,7 @@ export function stats(city: City): CityStats {
 		waterSupply: waterSupply(city.buildings),
 		population: population(city.buildings),
 		dailyBudget: revenue - upkeep,
+		day: Math.floor(city.tick / TICKS_PER_DAY) + 1,
+		dayProgress: (city.tick % TICKS_PER_DAY) / TICKS_PER_DAY,
 	};
 }
