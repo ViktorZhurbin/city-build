@@ -1,6 +1,6 @@
 export const GRID_SIZE = 10;
 export const CELL_COUNT = GRID_SIZE * GRID_SIZE;
-export const STARTING_MONEY = 700;
+export const STARTING_MONEY = 1000;
 
 // The economy settles once per "day"; ticks in between only run the physical
 // sim (power/water/jobs). For now a day is a bare counter. Later: surface a
