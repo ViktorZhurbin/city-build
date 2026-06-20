@@ -19,3 +19,16 @@ export function place(city: City, type: BuildingType, pos: number): City {
 		],
 	};
 }
+
+// Remove a building. No refund — bulldozing is the lever for digging out of an
+// overbuild (cut upkeep), not a way to recoup the build cost.
+export function demolish(city: City, pos: number): City {
+	const building = city.buildings.find((building) => building.pos === pos);
+
+	if (!building) return city;
+
+	return {
+		...city,
+		buildings: city.buildings.filter((building) => building.pos !== pos),
+	};
+}

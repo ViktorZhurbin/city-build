@@ -5,11 +5,11 @@ import { CELL_COUNT, STARTING_MONEY } from "./CONFIG";
 import { Grid } from "./components/Grid";
 import { Hud } from "./components/Hud";
 import { Toolbar } from "./components/Toolbar";
-import { place } from "./logic/place";
+import { demolish, place } from "./logic/place";
 import { stats } from "./logic/stats";
 import { clearCity, loadCity, saveCity } from "./logic/storage";
 import { tick } from "./logic/tick";
-import type { Building, BuildingType, City } from "./types";
+import type { Building, City, Tool } from "./types";
 
 const freshCity = (): City => ({
 	money: STARTING_MONEY,
@@ -24,7 +24,7 @@ const App = () => {
 	// effect re-runs whenever any of them updates — ticks, placements, money.
 	createEffect(() => saveCity(city));
 
-	const [selected, setSelected] = createSignal<BuildingType | null>(null);
+	const [selected, setSelected] = createSignal<Tool | null>(null);
 
 	// Tick speed as a multiplier; 0 means paused. Drives the sim interval below.
 	const [speed, setSpeed] = createSignal(1);
@@ -61,16 +61,19 @@ const App = () => {
 	}
 
 	function handleTileClick(pos: number) {
-		const type = selected();
+		const tool = selected();
 
-		if (!type) return;
+		if (!tool) return;
 
 		const current = unwrap(city);
-		const next = place(current, type, pos);
+		const next =
+			tool === "demolish" ? demolish(current, pos) : place(current, tool, pos);
 
 		if (next !== current) {
 			setCity(reconcile(next, { key: "pos" }));
-			setSelected(null);
+			// Placing deselects (one building per pick); the bulldozer stays armed
+			// so you can clear several tiles in a row.
+			if (tool !== "demolish") setSelected(null);
 		}
 	}
 

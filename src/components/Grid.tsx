@@ -1,12 +1,12 @@
 import "./Grid.css";
 import { Index } from "solid-js";
 import { CELL_COUNT, GRID_SIZE } from "../CONFIG";
-import type { Building, BuildingType } from "../types";
+import type { Building, Tool } from "../types";
 import { Tile } from "./Tile";
 
 export function Grid(props: {
 	cells: (Building | undefined)[];
-	selected: BuildingType | null;
+	selected: Tool | null;
 	onTileClick: (pos: number) => void;
 }) {
 	return (

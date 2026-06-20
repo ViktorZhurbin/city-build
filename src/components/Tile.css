@@ -10,7 +10,10 @@
 	font-size: 0.8rem;
 	font-weight: 700;
 	color: #fff;
-	transition: filter 150ms;
+	transition:
+		filter 150ms,
+		background 120ms,
+		box-shadow 120ms;
 }
 
 .tile[data-type="empty"] {
@@ -18,10 +21,24 @@
 	color: transparent;
 }
 
-/* Empty tiles only invite a click while a tool is selected; the hover tint
-   matches the selected building's colour (mirrors Toolbar swatches). */
-.grid:not([data-selected="none"]) .tile[data-type="empty"] {
+/* Empty tiles only invite a click while a building tool is selected; the hover
+   tint matches the selected building's colour (mirrors Toolbar swatches).
+   Excludes the bulldozer — there's nothing to demolish on an empty tile. */
+.grid:not([data-selected="none"]):not([data-selected="demolish"])
+.tile[data-type="empty"] {
 	cursor: pointer;
+}
+
+/* Bulldozer armed: occupied tiles are the targets, flagged danger-red on hover
+   (overriding the dark/grayscale filter so the warning always reads). */
+.grid[data-selected="demolish"] .tile:not([data-type="empty"]) {
+	cursor: pointer;
+}
+
+.grid[data-selected="demolish"] .tile:not([data-type="empty"]):hover {
+	background: #da3633;
+	box-shadow: inset 0 0 0 2px #ff7b72;
+	filter: none;
 }
 
 .grid[data-selected="house"] .tile[data-type="empty"]:hover {

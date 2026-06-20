@@ -1,4 +1,8 @@
 export type BuildingType = "house" | "store" | "power" | "water";
+
+// What the toolbar can have selected: a building to place, or the bulldozer.
+export type Tool = BuildingType | "demolish";
+
 export interface Building {
 	type: BuildingType;
 	pos: number; // cell index 0..CELL_COUNT-1; stable identity, ignored by the sim
