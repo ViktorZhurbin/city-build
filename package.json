@@ -7,8 +7,9 @@
 		"build": "rsbuild build",
 		"dev": "rsbuild --open",
 		"preview": "rsbuild preview",
-		"check": "biome check --write .",
-		"types": "tsc"
+		"lint-format": "biome check --write .",
+		"type-check": "tsc",
+		"check": "bun lint-format && bun type-check"
 	},
 	"dependencies": {
 		"solid-js": "^1"
