@@ -15,8 +15,6 @@ export const DEMOLISH_REFUND = 0.5;
 
 // --- Tuning knobs. This table IS the game's balance. ---
 // Everything interesting lives here; tweak numbers, not logic.
-// Only utilities carry `upkeep` — houses and stores are the tax base, never a
-// drain (SimCity's model: residential/commercial pay taxes, they don't bill).
 export const CONFIG = {
 	house: {
 		cost: 100,

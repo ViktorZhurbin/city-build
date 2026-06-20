@@ -16,18 +16,29 @@ All tunable numbers live in the `CONFIG.ts`. Balance happens there, nowhere else
 
 A stripped-down SimCity / Cities: Skylines. We borrow their three economic pillars and nothing else:
 
-1. Revenue is **demand-bound** — capped by `population` (`customersServed` in `simulation.ts`), so it's sublinear while upkeep is linear per building. The two cross → there's an optimal city size, and overbuilding bleeds money.
-2. **Utilities are sinks, never sources** — power/water cost to build _and_ an `upkeep` per day.
+1. Revenue is **demand-bound** — capped by `population` (`customersServed` in `simulation.ts`), so it's sublinear while utility upkeep grows with the city. The two cross → there's an optimal city size, and overbuilding bleeds money.
+2. **Utilities are sinks, never sources** — power/water cost to build _and_ an `upkeep` per day. Houses and stores carry no upkeep: **stores are the only income** (commerce tax), and houses feed them the people that income is bound to.
 3. **Growth follows demand** (the RCI loop): houses ≈ Residential, stores ≈ Commercial; no Industrial. Stores want people (workers + customers), houses want jobs + utilities.
 
 **Two clocks:** every ~1.5s a `tick()` runs the _physical_ sim (power → water → jobs allocation). Money only moves on the **day** boundary (`TICKS_PER_DAY`), when the budget settles as `revenue − upkeep`.
 
 **Deferred** (noted inline where they'd go): an end-of-day budget sheet popup (SimCity-style revenue/expense breakdown); a player-set tax-rate slider (the income-vs-growth dial).
 
+## Core mechanics (status quo — keep this current)
+
+The concrete rules as they stand. **Update this section whenever mechanics change** — it's the reference later threads (and we) lean on. Numbers live in `CONFIG.ts`.
+
+- **Buildings (4).** _House_ — draws power+water, produces `population`. _Store_ — draws power+water, needs `jobsNeeded` workers, serves up to `customersServed` people (capped by total population), each taxed `taxPerCustomer`. _Power plant_ — produces `powerSupply`. _Water plant_ — produces `waterSupply`, but only while itself powered.
+- **Tick resolution (`tick.ts`), in order:** (1) power allocated **greedily by placement order** — overflow buildings go dark; (2) water — only powered water plants produce, allocated the same greedy way; (3) jobs — `population` staffs powered+watered stores greedily, unstaffed stores sit idle. Placement order mattering is a feature.
+- **Money settles per day, not per tick.** Every `TICKS_PER_DAY` ticks: `money += revenue − upkeep`. `revenue` = served customers × tax (`totalRevenue`) — **stores are the only income**, houses just supply the people it's capped by; `upkeep` = **utilities only** (`totalUpkeep` — houses/stores carry no upkeep). Both live in `simulation.ts`.
+- **Build / demolish.** Placing costs full price, blocked when unaffordable. Demolishing refunds `DEMOLISH_REFUND` of cost (the recovery lever) — bulldozer stays armed for repeat clears. No bankruptcy floor; money can go negative, but utilities-only upkeep + refund make recovery always reachable.
+- **Controls & persistence.** Speed: pause / 1× / 2× / 3× scales the tick interval. The whole `City` (money, buildings, tick) persists to `localStorage` on every change; speed/selection are view state, not saved.
+
 ## Code style
 
 - **No single-letter variables.** Use descriptive names everywhere — parameters, locals, callbacks. `building` not `b`, `placed` not `x`, `cityStats` not `s`.
 - **Extract boolean expressions into named variables.** Pull non-trivial conditions out of `if` statements. `const cellOccupied = ...` then `if (cellOccupied)`, not an inline predicate.
+- add newlines before/after multiline expressions, code blocks, before return statements, etc;
 
 ## Commands
 
