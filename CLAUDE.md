@@ -20,9 +20,9 @@ A stripped-down SimCity / Cities: Skylines. We borrow their three economic pilla
 2. **Utilities are sinks, never sources** — power/water cost to build _and_ an `upkeep` per day.
 3. **Growth follows demand** (the RCI loop): houses ≈ Residential, stores ≈ Commercial; no Industrial. Stores want people (workers + customers), houses want jobs + utilities.
 
-**Two clocks:** every ~1.5s a `tick()` runs the _physical_ sim (power → water → jobs allocation). Money only moves on the **day** boundary (`TICKS_PER_DAY`), when the budget settles as `revenue − upkeep`. The day is a bare counter today; see the "later" notes below.
+**Two clocks:** every ~1.5s a `tick()` runs the _physical_ sim (power → water → jobs allocation). Money only moves on the **day** boundary (`TICKS_PER_DAY`), when the budget settles as `revenue − upkeep`.
 
-**Deliberately deferred** (noted inline where they'd go): a visible day number + end-of-day budget sheet; a player-set tax-rate slider (the income-vs-growth dial).
+**Deferred** (noted inline where they'd go): an end-of-day budget sheet popup (SimCity-style revenue/expense breakdown); a player-set tax-rate slider (the income-vs-growth dial).
 
 ## Code style
 
