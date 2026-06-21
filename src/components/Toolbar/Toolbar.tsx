@@ -1,4 +1,5 @@
 import "./Toolbar.css";
+import { ToggleGroup } from "@kobalte/core/toggle-group";
 import { Index } from "solid-js";
 import { StatCard, type StatLine } from "@/components/ui/StatCard";
 import { Tooltip } from "@/components/ui/Tooltip";
@@ -19,11 +20,14 @@ export function Toolbar(props: {
 	money: number;
 	onSelect: (tool: Tool | null) => void;
 }) {
-	const toggle = (tool: Tool) =>
-		props.onSelect(props.selected === tool ? null : tool);
-
 	return (
-		<div class="toolbar">
+		// One exclusive selection across all tools; re-clicking the active tool
+		// emits null, which clears the selection (same as the old toggle).
+		<ToggleGroup
+			class="toolbar"
+			value={props.selected}
+			onChange={(value) => props.onSelect(value as Tool | null)}
+		>
 			<div class="toolbar-buildings">
 				<Index each={BUILDING_TYPES}>
 					{(type) => {
@@ -38,17 +42,15 @@ export function Toolbar(props: {
 									/>
 								}
 							>
-								<button
-									type="button"
+								<ToggleGroup.Item
 									class="tool-btn"
 									data-type={type()}
-									data-active={props.selected === type() ? "true" : "false"}
+									value={type()}
 									disabled={unaffordable()}
-									onClick={() => toggle(type())}
 								>
 									{LABELS[type()]}
 									<span class="tool-cost">${BUILDINGS[type()].cost}</span>
-								</button>
+								</ToggleGroup.Item>
 							</Tooltip>
 						);
 					}}
@@ -67,16 +69,11 @@ export function Toolbar(props: {
 					/>
 				}
 			>
-				<button
-					type="button"
-					class="tool-btn tool-btn-demolish"
-					data-active={props.selected === "demolish" ? "true" : "false"}
-					onClick={() => toggle("demolish")}
-				>
+				<ToggleGroup.Item class="tool-btn tool-btn-demolish" value="demolish">
 					Demolish
-				</button>
+				</ToggleGroup.Item>
 			</Tooltip>
-		</div>
+		</ToggleGroup>
 	);
 }
 

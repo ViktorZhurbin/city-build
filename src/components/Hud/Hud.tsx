@@ -1,4 +1,6 @@
 import "./Hud.css";
+import { Progress } from "@kobalte/core/progress";
+import { ToggleGroup } from "@kobalte/core/toggle-group";
 import { Index } from "solid-js";
 import type { CityStats } from "@/game/selectors";
 
@@ -20,12 +22,15 @@ export function Hud(props: {
 			<span class="hud-item">
 				<span class="hud-label">DAY</span>
 				{props.stats.day}
-				<span class="hud-day-bar">
-					<span
-						class="hud-day-fill"
-						style={{ width: `${props.stats.dayProgress * 100}%` }}
-					/>
-				</span>
+				<Progress
+					as="span"
+					class="hud-day"
+					value={props.stats.dayProgress * 100}
+				>
+					<Progress.Track as="span" class="hud-day-bar">
+						<Progress.Fill as="span" class="hud-day-fill" />
+					</Progress.Track>
+				</Progress>
 			</span>
 			<span class="hud-item">
 				<span class="hud-label">$</span>
@@ -55,20 +60,29 @@ export function Hud(props: {
 			</span>
 			<span class="hud-speed">
 				<span class="hud-label">SPEED</span>
-				<span class="hud-speed-btns">
+				<ToggleGroup
+					as="span"
+					class="hud-speed-btns"
+					value={String(props.speed)}
+					onChange={(value) => {
+						// Single-select toggle groups emit null when the active item is
+						// re-clicked; speed must always have a value, so ignore that.
+						if (value !== null) {
+							props.onSpeed(Number(value));
+						}
+					}}
+				>
 					<Index each={SPEEDS}>
 						{(option) => (
-							<button
-								type="button"
+							<ToggleGroup.Item
 								class="hud-speed-btn"
-								data-active={props.speed === option().value ? "true" : "false"}
-								onClick={() => props.onSpeed(option().value)}
+								value={String(option().value)}
 							>
 								{option().label}
-							</button>
+							</ToggleGroup.Item>
 						)}
 					</Index>
-				</span>
+				</ToggleGroup>
 			</span>
 			<button type="button" class="hud-reset" onClick={() => props.onReset()}>
 				Reset

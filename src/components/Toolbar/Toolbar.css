@@ -29,28 +29,28 @@
 	&[data-type="house"] {
 		border-color: var(--color-house-dark);
 
-		&[data-active="true"] {
+		&[data-pressed] {
 			background: var(--color-house-dark);
 		}
 	}
 	&[data-type="store"] {
 		border-color: var(--color-store-dark);
 
-		&[data-active="true"] {
+		&[data-pressed] {
 			background: var(--color-store-dark);
 		}
 	}
 	&[data-type="power"] {
 		border-color: var(--color-power-dark);
 
-		&[data-active="true"] {
+		&[data-pressed] {
 			background: var(--color-power-dark);
 		}
 	}
 	&[data-type="water"] {
 		border-color: var(--color-water-dark);
 
-		&[data-active="true"] {
+		&[data-pressed] {
 			background: var(--color-water-dark);
 		}
 	}
@@ -62,7 +62,7 @@
 		justify-content: center;
 		border-color: var(--color-power-dark);
 
-		&[data-active="true"] {
+		&[data-pressed] {
 			background: var(--color-danger);
 			border-color: var(--color-danger);
 		}

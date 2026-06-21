@@ -28,7 +28,13 @@
 	opacity: 0.5;
 }
 
+.hud-day {
+	display: block;
+	width: 100%;
+}
+
 .hud-day-bar {
+	display: block;
 	width: 100%;
 	height: 3px;
 	margin-top: 1px;
@@ -40,6 +46,8 @@
 .hud-day-fill {
 	display: block;
 	height: 100%;
+	/* Kobalte's Progress exposes the filled fraction as this custom property. */
+	width: var(--kb-progress-fill-width);
 	background: var(--color-accent-bright);
 	transition: width var(--transition) linear;
 }
@@ -64,7 +72,7 @@
 		background: var(--color-control-hover);
 	}
 
-	&[data-active="true"] {
+	&[data-pressed] {
 		background: var(--color-accent);
 		border-color: var(--color-accent);
 	}
