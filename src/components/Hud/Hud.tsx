@@ -12,26 +12,20 @@ export function Hud(props: {
 }) {
 	return (
 		<div class="hud">
-			<TimeControl
-				day={props.stats.day}
-				dayProgress={props.stats.dayProgress}
-				speed={props.speed}
-				onSpeed={props.onSpeed}
-			/>
-			<Money money={props.stats.money} dailyBudget={props.stats.dailyBudget} />
-			<span class="hud-item">
-				<span class="hud-label">PWR</span>
-				{props.stats.powerSupply}/{props.stats.powerDemand}
-			</span>
-			<span class="hud-item">
-				<span class="hud-label">H₂O</span>
-				{props.stats.waterSupply}/{props.stats.waterDemand}
-			</span>
-			<Stat icon="👥" value={props.stats.population} />
-			<span class="hud-item">
-				<span class="hud-label">JOBS</span>
-				{props.stats.jobs}
-			</span>
+			<div class="hud-main">
+				<TimeControl
+					day={props.stats.day}
+					dayProgress={props.stats.dayProgress}
+					speed={props.speed}
+					onSpeed={props.onSpeed}
+				/>
+				<Money
+					money={props.stats.money}
+					dailyBudget={props.stats.dailyBudget}
+				/>
+				<Stat icon="👥" value={props.stats.population} />
+			</div>
+
 			<button type="button" class="hud-reset" onClick={() => props.onReset()}>
 				Reset
 			</button>

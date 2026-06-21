@@ -1,4 +1,7 @@
 .money-budget {
+	font-size: var(--font-sm);
+	font-weight: 600;
+
 	&[data-trend="up"] {
 		color: var(--color-positive);
 	}

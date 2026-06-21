@@ -1,39 +1,36 @@
 .hud {
+	/* One height for every segment in the bar (buttons, date, stats, reset) so
+	   they line up; cascades to the HUD's child components. */
+	--hud-segment-height: 32px;
+
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	gap: 24px;
+
+	padding: 8px 20px;
 	background: var(--color-panel);
 	border: 1px solid var(--color-border);
 	border-radius: var(--radius);
-	padding: 8px 20px;
+
 	font-size: var(--font-md);
-	font-variant-numeric: tabular-nums;
 }
 
-.hud-item {
+.hud-main {
 	display: flex;
-	flex-direction: column;
 	align-items: center;
-	gap: 2px;
-}
-
-.hud-label {
-	font-size: var(--font-xs);
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	opacity: 0.5;
+	gap: 16px;
 }
 
 .hud-reset {
 	margin-left: auto;
-	align-self: center;
-	padding: 5px 11px;
+	height: var(--hud-segment-height);
+	padding: 0 11px;
 	border: 1px solid var(--color-border);
 	border-radius: var(--radius);
 	background: var(--color-control);
 	color: var(--color-text);
 	font-size: var(--font-sm);
-	font-weight: 600;
 	cursor: pointer;
 
 	&:hover {

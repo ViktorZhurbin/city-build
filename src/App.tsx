@@ -80,12 +80,6 @@ const App = () => {
 
 	return (
 		<div class="app">
-			<Hud
-				stats={cityStats()}
-				speed={speed()}
-				onSpeed={setSpeed}
-				onReset={handleReset}
-			/>
 			<Grid
 				cells={cells()}
 				selected={selected()}
@@ -95,6 +89,12 @@ const App = () => {
 				money={city.money}
 				selected={selected()}
 				onSelect={setSelected}
+			/>
+			<Hud
+				stats={cityStats()}
+				speed={speed()}
+				onSpeed={setSpeed}
+				onReset={handleReset}
 			/>
 		</div>
 	);
