@@ -10,7 +10,7 @@ export interface StatLine {
 // it, so the look stays identical wherever stats are surfaced.
 export function StatCard(props: { title: string; lines: StatLine[] }) {
 	return (
-		<div class="statcard">
+		<div>
 			<div class="statcard-title">{props.title}</div>
 			{props.lines.map((line) => (
 				<div class="statcard-row">

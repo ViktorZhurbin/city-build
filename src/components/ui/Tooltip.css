@@ -4,16 +4,16 @@
 
 .tooltip-content {
 	z-index: 10;
-	min-width: 9rem;
-	padding: 0.5rem 0.6rem;
-	border-radius: 6px;
-	border: 1px solid #30363d;
-	background: #161b22;
-	color: #fff;
-	font-size: 0.75rem;
+	min-width: 144px;
+	padding: 8px 10px;
+	border-radius: var(--radius);
+	border: 1px solid var(--color-border);
+	background: var(--color-panel);
+	color: var(--color-text);
+	font-size: var(--font-sm);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 	transform-origin: var(--kb-tooltip-content-transform-origin);
-	animation: tooltip-in 100ms ease-out;
+	animation: tooltip-in var(--transition-fast) ease-out;
 }
 
 @keyframes tooltip-in {
@@ -26,5 +26,5 @@
 /* Kobalte's arrow is an SVG whose fill follows currentColor — match the
    content background so it reads as a pointer, not a white wedge. */
 .tooltip-arrow {
-	color: #161b22;
+	color: var(--color-panel);
 }

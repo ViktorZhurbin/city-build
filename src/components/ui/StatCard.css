@@ -1,12 +1,12 @@
 .statcard-title {
 	font-weight: 600;
-	margin-bottom: 0.35rem;
+	margin-bottom: 6px;
 }
 
 .statcard-row {
 	display: flex;
 	justify-content: space-between;
-	gap: 1rem;
+	gap: 16px;
 	line-height: 1.5;
 }
 

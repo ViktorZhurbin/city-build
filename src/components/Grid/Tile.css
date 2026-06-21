@@ -2,71 +2,38 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 2.5rem;
-	height: 2.5rem;
+	width: var(--tile-size);
+	height: var(--tile-size);
 	border: none;
-	border-radius: 3px;
+	border-radius: var(--radius-sm);
 	cursor: default;
-	font-size: 0.8rem;
+	font-size: var(--font-sm);
 	font-weight: 700;
-	color: #fff;
+	color: var(--color-text);
 	transition:
-		filter 150ms,
-		background 120ms,
-		box-shadow 120ms;
-}
+		filter var(--transition),
+		background var(--transition),
+		box-shadow var(--transition);
 
-.tile[data-type="empty"] {
-	background: #1b2436;
-	color: transparent;
-}
+	&[data-type="empty"] {
+		background: var(--color-empty);
+		color: transparent;
+	}
 
-/* Empty tiles only invite a click while a building tool is selected; the hover
-   tint matches the selected building's colour (mirrors Toolbar swatches).
-   Excludes the bulldozer — there's nothing to demolish on an empty tile. */
-.grid:not([data-selected="none"]):not([data-selected="demolish"])
-.tile[data-type="empty"] {
-	cursor: pointer;
-}
+	&[data-type="house"] {
+		background: var(--color-house);
+	}
+	&[data-type="store"] {
+		background: var(--color-store);
+	}
+	&[data-type="power"] {
+		background: var(--color-power);
+	}
+	&[data-type="water"] {
+		background: var(--color-water);
+	}
 
-/* Bulldozer armed: occupied tiles are the targets, flagged danger-red on hover
-   (overriding the dark/grayscale filter so the warning always reads). */
-.grid[data-selected="demolish"] .tile:not([data-type="empty"]) {
-	cursor: pointer;
-}
-
-.grid[data-selected="demolish"] .tile:not([data-type="empty"]):hover {
-	background: #da3633;
-	box-shadow: inset 0 0 0 2px #ff7b72;
-	filter: none;
-}
-
-.grid[data-selected="house"] .tile[data-type="empty"]:hover {
-	background: #3a7d44;
-}
-.grid[data-selected="store"] .tile[data-type="empty"]:hover {
-	background: #c98a00;
-}
-.grid[data-selected="power"] .tile[data-type="empty"]:hover {
-	background: #c0392b;
-}
-.grid[data-selected="water"] .tile[data-type="empty"]:hover {
-	background: #1a78a8;
-}
-
-.tile[data-type="house"] {
-	background: #3a7d44;
-}
-.tile[data-type="store"] {
-	background: #c98a00;
-}
-.tile[data-type="power"] {
-	background: #c0392b;
-}
-.tile[data-type="water"] {
-	background: #1a78a8;
-}
-
-.tile[data-dark="true"] {
-	filter: grayscale(0.7) brightness(0.4);
+	&[data-dark="true"] {
+		filter: grayscale(0.7) brightness(0.4);
+	}
 }

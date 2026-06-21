@@ -1,3 +1,50 @@
+/* Colours are OKLCH — oklch(lightness chroma hue). Variants are derived from
+   their base with color-mix so the relationship reads in the code: a *-hover or
+   *-bright is the base lightened, a *-dark is the base darkened. Neutrals share
+   hue ~260 (a faint cool tint). */
+:root {
+	/* Surface / chrome — neutrals */
+	--color-text: oklch(1 0 0);
+	--color-bg: oklch(0.18 0.01 260);
+	--color-panel: oklch(0.22 0.02 260);
+	--color-control: oklch(0.27 0.02 260);
+	--color-control-hover: color-mix(in oklch, var(--color-control), white 8%);
+	--color-border: oklch(0.33 0.02 260);
+	--color-empty: oklch(0.26 0.04 260);
+
+	/* Accent */
+	--color-accent: oklch(0.57 0.2 260);
+	--color-accent-bright: color-mix(in oklch, var(--color-accent), white 35%);
+
+	/* Building palette — bright is the tile, dark is the toolbar swatch. */
+	--color-house: oklch(0.53 0.11 147);
+	--color-store: oklch(0.68 0.14 76);
+	--color-power: oklch(0.54 0.17 30);
+	--color-water: oklch(0.54 0.11 237);
+	--color-house-dark: color-mix(in oklch, var(--color-house), black 20%);
+	--color-store-dark: color-mix(in oklch, var(--color-store), black 40%);
+	--color-power-dark: color-mix(in oklch, var(--color-power), black 40%);
+	--color-water-dark: color-mix(in oklch, var(--color-water), black 40%);
+
+	/* Danger */
+	--color-danger: oklch(0.59 0.2 27);
+	--color-danger-bright: color-mix(in oklch, var(--color-danger), white 35%);
+
+	/* One tile edge — shared by the grid track sizing and the tiles themselves. */
+	--tile-size: 40px;
+
+	--radius: 6px;
+	--radius-sm: 3px;
+
+	/* Font sizes stay in rem (respect browser zoom); spacing is px. */
+	--font-xs: 0.7rem;
+	--font-sm: 0.8rem;
+	--font-md: 0.85rem;
+
+	--transition-fast: 100ms;
+	--transition: 150ms;
+}
+
 *,
 *::before,
 *::after {
@@ -6,15 +53,15 @@
 
 body {
 	margin: 0;
-	color: #fff;
+	color: var(--color-text);
 	font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-	background: #0d1117;
+	background: var(--color-bg);
 }
 
 .app {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 1rem;
-	padding: 1.25rem;
+	gap: 16px;
+	padding: 20px;
 }

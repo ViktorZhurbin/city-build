@@ -1,23 +1,28 @@
 .hud {
 	display: flex;
-	gap: 1.5rem;
-	background: #161b22;
-	border: 1px solid #30363d;
-	border-radius: 6px;
-	padding: 0.5rem 1.25rem;
-	font-size: 0.85rem;
+	gap: 24px;
+	background: var(--color-panel);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	padding: 8px 20px;
+	font-size: var(--font-md);
 	font-variant-numeric: tabular-nums;
 }
 
-.hud-item {
+.hud-item,
+.hud-speed {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 2px;
 }
 
+.hud-speed {
+	margin-left: auto;
+}
+
 .hud-label {
-	font-size: 0.65rem;
+	font-size: var(--font-xs);
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
 	opacity: 0.5;
@@ -27,24 +32,16 @@
 	width: 100%;
 	height: 3px;
 	margin-top: 1px;
-	border-radius: 2px;
-	background: #30363d;
+	border-radius: var(--radius-sm);
+	background: var(--color-border);
 	overflow: hidden;
 }
 
 .hud-day-fill {
 	display: block;
 	height: 100%;
-	background: #58a6ff;
-	transition: width 150ms linear;
-}
-
-.hud-speed {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 2px;
-	margin-left: auto;
+	background: var(--color-accent-bright);
+	transition: width var(--transition) linear;
 }
 
 .hud-speed-btns {
@@ -53,38 +50,38 @@
 }
 
 .hud-speed-btn {
-	min-width: 1.6rem;
-	padding: 0.15rem 0.3rem;
-	border: 1px solid #30363d;
-	border-radius: 4px;
-	background: #21262d;
-	color: #fff;
-	font-size: 0.7rem;
+	min-width: 26px;
+	padding: 2px 5px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	background: var(--color-control);
+	color: var(--color-text);
+	font-size: var(--font-xs);
 	font-weight: 600;
 	cursor: pointer;
-}
 
-.hud-speed-btn:hover {
-	background: #2d333b;
-}
+	&:hover {
+		background: var(--color-control-hover);
+	}
 
-.hud-speed-btn[data-active="true"] {
-	background: #1f6feb;
-	border-color: #1f6feb;
+	&[data-active="true"] {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+	}
 }
 
 .hud-reset {
 	align-self: center;
-	padding: 0.3rem 0.7rem;
-	border: 1px solid #30363d;
-	border-radius: 6px;
-	background: #21262d;
-	color: #fff;
-	font-size: 0.75rem;
+	padding: 5px 11px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	background: var(--color-control);
+	color: var(--color-text);
+	font-size: var(--font-sm);
 	font-weight: 600;
 	cursor: pointer;
-}
 
-.hud-reset:hover {
-	background: #2d333b;
+	&:hover {
+		background: var(--color-control-hover);
+	}
 }

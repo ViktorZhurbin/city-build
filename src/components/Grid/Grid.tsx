@@ -16,7 +16,7 @@ export function Grid(props: {
 			// Drives the empty-tile hover affordance: no tool selected → no hover,
 			// otherwise the hover tint matches the selected building's colour.
 			data-selected={props.selected ?? "none"}
-			style={{ "grid-template-columns": `repeat(${GRID_SIZE}, 2.5rem)` }}
+			style={{ "--grid-size": GRID_SIZE }}
 		>
 			<Index each={Array.from({ length: CELL_COUNT })}>
 				{(_, i) => (
