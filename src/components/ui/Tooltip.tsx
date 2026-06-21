@@ -11,7 +11,12 @@ export function Tooltip(props: {
 	children: JSX.Element;
 }) {
 	return (
-		<KobalteTooltip>
+		// These tooltips are read-only stat cards, so we make them dismiss eagerly:
+		// closeDelay 0 + ignoreSafeArea close the moment the cursor leaves the
+		// trigger (even when moving toward the content), and pointer-events:none on
+		// the content (in Tooltip.css) lets the cursor pass through rather than
+		// hovering / selecting it or obscuring the UI behind.
+		<KobalteTooltip closeDelay={0} ignoreSafeArea>
 			<KobalteTooltip.Trigger as="span" class="tooltip-trigger">
 				{props.children}
 			</KobalteTooltip.Trigger>

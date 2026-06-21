@@ -3,6 +3,9 @@
 }
 
 .tooltip-content {
+	/* Read-only stat card: let the cursor pass straight through so it can't be
+	   hovered/selected and never blocks the UI it sits over. */
+	pointer-events: none;
 	z-index: 10;
 	min-width: 144px;
 	padding: 8px 10px;
