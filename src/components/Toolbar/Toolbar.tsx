@@ -1,9 +1,9 @@
 import "./Toolbar.css";
-import { BUILDINGS, DEMOLISH_REFUND } from "../../game/balance";
-import type { BuildingType } from "../../game/state";
-import type { Tool } from "../../game/types";
-import { StatCard, type StatLine } from "../ui/StatCard";
-import { Tooltip } from "../ui/Tooltip";
+import { StatCard, type StatLine } from "@/components/ui/StatCard";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { BUILDINGS, DEMOLISH_REFUND } from "@/game/balance";
+import type { BuildingType } from "@/game/state";
+import type { Tool } from "@/game/types";
 
 const BUILDING_TYPES: BuildingType[] = ["house", "store", "power", "water"];
 const LABELS: Record<BuildingType, string> = {

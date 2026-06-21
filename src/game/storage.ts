@@ -1,4 +1,4 @@
-import type { City } from "./state";
+import type { City } from "@/game/state";
 
 // The whole city is one small JSON blob — plain localStorage is plenty, no DB
 // needed. The version suffix is bumped whenever the City shape changes

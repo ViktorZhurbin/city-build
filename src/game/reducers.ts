@@ -1,6 +1,12 @@
-import { BUILDINGS, DEMOLISH_REFUND, TICKS_PER_DAY } from "./balance";
-import { resolve } from "./resolve";
-import { addOne, type BuildingType, type City, has, removeOne } from "./state";
+import { BUILDINGS, DEMOLISH_REFUND, TICKS_PER_DAY } from "@/game/balance";
+import { resolve } from "@/game/resolve";
+import {
+	addOne,
+	type BuildingType,
+	type City,
+	has,
+	removeOne,
+} from "@/game/state";
 
 // The write path: the only functions that produce a new City. Each is a pure
 // transition — `(City, …args) → City`. `place`/`demolish` are player commands;

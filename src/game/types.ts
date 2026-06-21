@@ -1,4 +1,4 @@
-import type { BuildingType } from "./state";
+import type { BuildingType } from "@/game/state";
 
 // What the toolbar can have selected: a building to place, or the bulldozer.
 // The domain types (BuildingType, Building, City) live in game/state.ts; this

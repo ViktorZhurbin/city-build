@@ -1,5 +1,5 @@
-import { BUILDINGS } from "./balance";
-import { type Building, type Buildings, selectAll } from "./state";
+import { BUILDINGS } from "@/game/balance";
+import { type Building, type Buildings, selectAll } from "@/game/state";
 
 // The engine. `resolve` runs the whole physical simulation as ONE pure pass over
 // the durable buildings and returns the complete picture: each building's live

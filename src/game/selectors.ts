@@ -1,6 +1,6 @@
-import { CELL_COUNT, TICKS_PER_DAY } from "./balance";
-import type { Resolved, ResolvedBuilding } from "./resolve";
-import type { City } from "./state";
+import { CELL_COUNT, TICKS_PER_DAY } from "@/game/balance";
+import type { Resolved, ResolvedBuilding } from "@/game/resolve";
+import type { City } from "@/game/state";
 
 // The read path: thin projections of a `Resolved` snapshot into the exact shapes
 // the views want. No rules live here — selectors only reshape what `resolve`

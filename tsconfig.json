@@ -9,6 +9,11 @@
 		"jsxImportSource": "solid-js",
 		"useDefineForClassFields": true,
 
+		/* paths */
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+
 		/* modules */
 		"moduleDetection": "force",
 		"moduleResolution": "bundler",
