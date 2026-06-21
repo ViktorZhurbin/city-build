@@ -1,7 +1,7 @@
 import "./Toolbar.css";
-import { CONFIG, DEMOLISH_REFUND } from "../../CONFIG";
+import { BUILDINGS, DEMOLISH_REFUND } from "../../game/balance";
 import type { BuildingType } from "../../game/state";
-import type { Tool } from "../../types";
+import type { Tool } from "../../game/types";
 import { StatCard, type StatLine } from "../ui/StatCard";
 import { Tooltip } from "../ui/Tooltip";
 
@@ -25,7 +25,7 @@ export function Toolbar(props: {
 		<div class="toolbar">
 			<div class="toolbar-buildings">
 				{BUILDING_TYPES.map((type) => {
-					const unaffordable = () => CONFIG[type].cost > props.money;
+					const unaffordable = () => BUILDINGS[type].cost > props.money;
 
 					return (
 						<Tooltip
@@ -42,7 +42,7 @@ export function Toolbar(props: {
 								onClick={() => toggle(type)}
 							>
 								{LABELS[type]}
-								<span class="tool-cost">${CONFIG[type].cost}</span>
+								<span class="tool-cost">${BUILDINGS[type].cost}</span>
 							</button>
 						</Tooltip>
 					);
@@ -82,34 +82,40 @@ function buildingStats(type: BuildingType): StatLine[] {
 
 	switch (type) {
 		case "house":
-			lines.push({ label: "Population", value: `+${CONFIG.house.population}` });
+			lines.push({
+				label: "Population",
+				value: `+${BUILDINGS.house.population}`,
+			});
 			break;
 		case "store":
-			lines.push({ label: "Jobs needed", value: `${CONFIG.store.jobsNeeded}` });
+			lines.push({
+				label: "Jobs needed",
+				value: `${BUILDINGS.store.jobsNeeded}`,
+			});
 			lines.push({
 				label: "Customers",
-				value: `${CONFIG.store.customersServed}`,
+				value: `${BUILDINGS.store.customersServed}`,
 			});
 			lines.push({
 				label: "Tax / customer",
-				value: `$${CONFIG.store.taxPerCustomer}`,
+				value: `$${BUILDINGS.store.taxPerCustomer}`,
 			});
 			break;
 		case "power":
 			lines.push({
 				label: "Power supply",
-				value: `+${CONFIG.power.powerSupply}`,
+				value: `+${BUILDINGS.power.powerSupply}`,
 			});
 			break;
 		case "water":
 			lines.push({
 				label: "Water supply",
-				value: `+${CONFIG.water.waterSupply}`,
+				value: `+${BUILDINGS.water.waterSupply}`,
 			});
 			break;
 	}
 
-	const config = CONFIG[type];
+	const config = BUILDINGS[type];
 
 	if (config.powerUse > 0) {
 		lines.push({ label: "Power use", value: `−${config.powerUse}` });

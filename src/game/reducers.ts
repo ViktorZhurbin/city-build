@@ -1,4 +1,4 @@
-import { CONFIG, DEMOLISH_REFUND, TICKS_PER_DAY } from "../CONFIG";
+import { BUILDINGS, DEMOLISH_REFUND, TICKS_PER_DAY } from "./balance";
 import { resolve } from "./resolve";
 import { addOne, type BuildingType, type City, has, removeOne } from "./state";
 
@@ -8,7 +8,7 @@ import { addOne, type BuildingType, type City, has, removeOne } from "./state";
 
 export function place(city: City, type: BuildingType, pos: number): City {
 	const cellOccupied = has(city.buildings, pos);
-	const building = CONFIG[type];
+	const building = BUILDINGS[type];
 
 	if (cellOccupied || city.money < building.cost) {
 		return city;
@@ -31,7 +31,7 @@ export function demolish(city: City, pos: number): City {
 		return city;
 	}
 
-	const refund = Math.floor(CONFIG[building.type].cost * DEMOLISH_REFUND);
+	const refund = Math.floor(BUILDINGS[building.type].cost * DEMOLISH_REFUND);
 
 	return {
 		...city,

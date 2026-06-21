@@ -1,4 +1,4 @@
-import { CELL_COUNT, TICKS_PER_DAY } from "../CONFIG";
+import { CELL_COUNT, TICKS_PER_DAY } from "./balance";
 import type { Resolved, ResolvedBuilding } from "./resolve";
 import type { City } from "./state";
 

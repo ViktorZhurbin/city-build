@@ -1,5 +1,5 @@
 import "./Tile.css";
-import { CONFIG } from "../../CONFIG";
+import { BUILDINGS } from "../../game/balance";
 import type { ResolvedBuilding } from "../../game/resolve";
 import { StatCard, type StatLine } from "../ui/StatCard";
 import { Tooltip } from "../ui/Tooltip";
@@ -79,31 +79,34 @@ export function Tile(props: {
 function tileStats(building: ResolvedBuilding): StatLine[] {
 	const lines: StatLine[] = [];
 
-	const config = CONFIG[building.type];
+	const config = BUILDINGS[building.type];
 
 	switch (building.type) {
 		case "house":
 			lines.push({ label: "Population", value: `+${building.population}` });
 			break;
 		case "store":
-			lines.push({ label: "Jobs needed", value: `${CONFIG.store.jobsNeeded}` });
+			lines.push({
+				label: "Jobs needed",
+				value: `${BUILDINGS.store.jobsNeeded}`,
+			});
 			lines.push({ label: "Customers", value: `${building.customers}` });
 			lines.push({ label: "Revenue", value: `$${building.revenue}/day` });
 			lines.push({
 				label: "Tax / customer",
-				value: `$${CONFIG.store.taxPerCustomer}`,
+				value: `$${BUILDINGS.store.taxPerCustomer}`,
 			});
 			break;
 		case "power":
 			lines.push({
 				label: "Power supply",
-				value: `+${CONFIG.power.powerSupply}`,
+				value: `+${BUILDINGS.power.powerSupply}`,
 			});
 			break;
 		case "water":
 			lines.push({
 				label: "Water supply",
-				value: `+${CONFIG.water.waterSupply}`,
+				value: `+${BUILDINGS.water.waterSupply}`,
 			});
 			break;
 	}

@@ -1,16 +1,16 @@
 import { createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 import "./App.css";
-import { STARTING_MONEY } from "./CONFIG";
 import { Grid } from "./components/Grid/Grid";
 import { Hud } from "./components/Hud/Hud";
 import { Toolbar } from "./components/Toolbar/Toolbar";
+import { STARTING_MONEY } from "./game/balance";
 import { demolish, place, tick } from "./game/reducers";
 import { resolve } from "./game/resolve";
 import { toCells, toCityStats } from "./game/selectors";
 import { type City, emptyBuildings } from "./game/state";
 import { clearCity, loadCity, saveCity } from "./game/storage";
-import type { Tool } from "./types";
+import type { Tool } from "./game/types";
 
 const freshCity = (): City => ({
 	money: STARTING_MONEY,

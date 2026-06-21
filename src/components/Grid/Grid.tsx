@@ -1,8 +1,8 @@
 import "./Grid.css";
 import { Index } from "solid-js";
-import { CELL_COUNT, GRID_SIZE } from "../../CONFIG";
+import { CELL_COUNT, GRID_SIZE } from "../../game/balance";
 import type { ResolvedBuilding } from "../../game/resolve";
-import type { Tool } from "../../types";
+import type { Tool } from "../../game/types";
 import { Tile } from "./Tile";
 
 export function Grid(props: {

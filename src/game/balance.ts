@@ -15,7 +15,7 @@ export const DEMOLISH_REFUND = 0.5;
 
 // --- Tuning knobs. This table IS the game's balance. ---
 // Everything interesting lives here; tweak numbers, not logic.
-export const CONFIG = {
+export const BUILDINGS = {
 	house: {
 		cost: 100,
 		powerUse: 1,

@@ -12,7 +12,7 @@ The dependency chain is the engine:
 
 > houses make people → people staff AND shop at stores → stores' commerce is taxed for money → money pays utility upkeep + buys expansion → utilities let you place more houses
 
-All tunable numbers live in the `CONFIG.ts`. Balance happens there, nowhere else.
+All tunable numbers live in `game/balance.ts`.
 
 ## Design intent
 
@@ -28,7 +28,7 @@ A stripped-down SimCity / Cities: Skylines. We borrow their three economic pilla
 
 ## Core mechanics (status quo — keep this current)
 
-The concrete rules as they stand. **Update this section whenever mechanics change** — it's the reference later threads (and we) lean on. Numbers live in `CONFIG.ts`.
+The concrete rules as they stand. **Update this section whenever mechanics change** — it's the reference later threads (and we) lean on.
 
 - **Buildings (4).** _House_ — draws power+water, produces `population`. _Store_ — draws power+water, needs `jobsNeeded` workers, serves up to `customersServed` people (capped by total population), each taxed `taxPerCustomer`. _Power plant_ — produces `powerSupply`. _Water plant_ — produces `waterSupply`, but only while itself powered.
 - **Sim resolution (`game/resolve.ts`), one pure pass in order:** (1) power allocated **greedily by placement order** — overflow buildings go dark; (2) water — only powered water plants produce, allocated the same greedy way; (3) jobs — `population` staffs powered+watered stores greedily, unstaffed stores sit idle; (4) customers — the same `population` shops, handed out greedily across active stores (what each store's revenue is bound to). Placement order mattering is a feature; these flags/numbers are **derived, never stored** on the building.
@@ -46,6 +46,8 @@ the old pattern of per-question selectors that each re-walk the buildings.
 - **`selectors.ts`** — read path: `toCityStats` (HUD), `toCells` (grid). Pure projections of a `Resolved`; no rules.
 - **`reducers.ts`** — write path, the only producers of a new `City`: `place` / `demolish` (player commands) and `tick` (the clock — advances the counter; settles money via `resolve` on the day boundary).
 - **`storage.ts`** — localStorage; bump the key suffix (`…:v2`) on any incompatible `City` shape change.
+- **`balance.ts`** — the tuning knobs. Numbers only, no logic.
+- **`types.ts`** — shared cross-module types (e.g. `Tool`).
 
 `App.tsx` wires it: `resolve` runs inside a `createMemo` over `city.buildings` (the selector cache), feeding both the HUD and the tiles. Because flags are derived, a newly-placed building shows correct state immediately, not on the next tick.
 

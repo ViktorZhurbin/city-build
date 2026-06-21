@@ -1,4 +1,4 @@
-import { CONFIG } from "../CONFIG";
+import { BUILDINGS } from "./balance";
 import { type Building, type Buildings, selectAll } from "./state";
 
 // The engine. `resolve` runs the whole physical simulation as ONE pure pass over
@@ -54,7 +54,7 @@ export function resolve(buildings: Buildings): Resolved {
 	// allocation priority, so the order of `working` is load-bearing.
 	const resolvedBuildings: ResolvedBuilding[] = selectAll(buildings).map(
 		(building) => {
-			const config = CONFIG[building.type];
+			const config = BUILDINGS[building.type];
 
 			return {
 				...building,
@@ -73,13 +73,13 @@ export function resolve(buildings: Buildings): Resolved {
 	//    they're always powered); once supply runs out, the rest go dark.
 	const powerSupply =
 		resolvedBuildings.filter((building) => building.type === "power").length *
-		CONFIG.power.powerSupply;
+		BUILDINGS.power.powerSupply;
 
 	let powerLeft = powerSupply;
 	let powerDemand = 0;
 
 	for (const building of resolvedBuildings) {
-		const powerUse = CONFIG[building.type].powerUse;
+		const powerUse = BUILDINGS[building.type].powerUse;
 		const powered = powerLeft >= powerUse;
 
 		if (powered) {
@@ -94,13 +94,13 @@ export function resolve(buildings: Buildings): Resolved {
 	const waterSupply =
 		resolvedBuildings.filter(
 			(building) => building.type === "water" && building.powered,
-		).length * CONFIG.water.waterSupply;
+		).length * BUILDINGS.water.waterSupply;
 
 	let waterLeft = waterSupply;
 	let waterDemand = 0;
 
 	for (const building of resolvedBuildings) {
-		const waterUse = CONFIG[building.type].waterUse;
+		const waterUse = BUILDINGS[building.type].waterUse;
 		const watered = waterLeft >= waterUse;
 
 		if (watered) {
@@ -120,8 +120,8 @@ export function resolve(buildings: Buildings): Resolved {
 			building.type === "house" && building.powered && building.watered;
 
 		if (operableHouse) {
-			building.population = CONFIG.house.population;
-			population += CONFIG.house.population;
+			building.population = BUILDINGS.house.population;
+			population += BUILDINGS.house.population;
 		}
 	}
 
@@ -136,13 +136,13 @@ export function resolve(buildings: Buildings): Resolved {
 			building.type === "store" && building.powered && building.watered;
 
 		if (suppliedStore) {
-			jobs += CONFIG.store.jobsNeeded;
+			jobs += BUILDINGS.store.jobsNeeded;
 		}
 
-		const staffed = suppliedStore && labourLeft >= CONFIG.store.jobsNeeded;
+		const staffed = suppliedStore && labourLeft >= BUILDINGS.store.jobsNeeded;
 
 		if (staffed) {
-			labourLeft -= CONFIG.store.jobsNeeded;
+			labourLeft -= BUILDINGS.store.jobsNeeded;
 		}
 
 		building.active = staffed;
@@ -158,11 +158,11 @@ export function resolve(buildings: Buildings): Resolved {
 			continue;
 		}
 
-		const served = Math.min(CONFIG.store.customersServed, shoppersLeft);
+		const served = Math.min(BUILDINGS.store.customersServed, shoppersLeft);
 
 		shoppersLeft -= served;
 		building.customers = served;
-		building.revenue = served * CONFIG.store.taxPerCustomer;
+		building.revenue = served * BUILDINGS.store.taxPerCustomer;
 		customersServed += served;
 	}
 
@@ -187,7 +187,7 @@ export function resolve(buildings: Buildings): Resolved {
 			population,
 			customersServed,
 			upkeep,
-			revenue: customersServed * CONFIG.store.taxPerCustomer,
+			revenue: customersServed * BUILDINGS.store.taxPerCustomer,
 		},
 	};
 }
