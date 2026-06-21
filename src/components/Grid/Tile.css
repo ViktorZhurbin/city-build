@@ -16,6 +16,14 @@
 		background var(--transition),
 		box-shadow var(--transition);
 
+	/* Hover cue: a ring + slight lift so it's clear which tile the tooltip
+	   describes. Brightness nudges the fill (visible even on dark empty tiles),
+	   the inset ring traces the tile without shifting layout. */
+	&:hover {
+		filter: brightness(1.15);
+		box-shadow: inset 0 0 0 2px oklch(1 0 0 / 0.7);
+	}
+
 	&[data-type="empty"] {
 		background: var(--color-empty);
 		color: transparent;
