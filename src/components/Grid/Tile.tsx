@@ -1,10 +1,14 @@
 import "./Tile.css";
-import { Show } from "solid-js";
-import { StatCard, type StatLine } from "@/components/ui/StatCard";
+import { For, Show } from "solid-js";
+import { StatCard } from "@/components/ui/StatCard";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { BUILDINGS } from "@/game/balance";
-import { isOperable, type ResolvedBuilding } from "@/game/resolve";
+import {
+	buildingIssues,
+	isOnline,
+	type ResolvedBuilding,
+} from "@/game/resolve";
 import type { BuildingType } from "@/game/state";
+import { ISSUE_META, tileAlerts, tileStats } from "./Tile.helpers";
 
 const LETTERS: Record<BuildingType, string> = {
 	house: "H",
@@ -30,17 +34,28 @@ export function Tile(props: {
 	// conditional teleports the one node between them when a cell toggles
 	// empty↔filled, which leaves Kobalte's tooltip trigger span empty.
 	const tileButton = () => {
+		const issues = () => (props.building ? buildingIssues(props.building) : []);
+
 		return (
 			<button
 				type="button"
 				class="tile"
 				data-type={props.building?.type ?? "empty"}
-				data-dark={
-					props.building && !isOperable(props.building) ? "true" : "false"
+				data-offline={
+					props.building && !isOnline(props.building) ? "true" : "false"
 				}
 				onClick={() => props.onClick(props.pos)}
 			>
 				{props.building?.type ? LETTERS[props.building.type] : ""}
+				<Show when={issues().length > 0}>
+					<span class="tile-badges">
+						<For each={issues()}>
+							{(issue) => (
+								<span class="tile-badge">{ISSUE_META[issue].icon}</span>
+							)}
+						</For>
+					</span>
+				</Show>
 			</button>
 		);
 	};
@@ -52,7 +67,11 @@ export function Tile(props: {
 			{(bld) => (
 				<Tooltip
 					content={
-						<StatCard title={LABELS[bld().type]} lines={tileStats(bld())} />
+						<StatCard
+							title={LABELS[bld().type]}
+							lines={tileStats(bld())}
+							alerts={tileAlerts(bld())}
+						/>
 					}
 				>
 					{tileButton()}
@@ -60,60 +79,4 @@ export function Tile(props: {
 			)}
 		</Show>
 	);
-}
-
-// Live stat lines for one building. Static figures (draws, jobs, tax) come from
-// CONFIG; the headline numbers the player cares about — population, served
-// customers, revenue, upkeep — come straight off the resolved building, so they
-// reflect its actual state (a dark house reads +0, an over-saturated store reads
-// $0). No status line: "offline" is already the dimmed tile, and a stalled store
-// reads as Customers 0 / Revenue $0.
-function tileStats(building: ResolvedBuilding): StatLine[] {
-	const lines: StatLine[] = [];
-
-	const config = BUILDINGS[building.type];
-
-	switch (building.type) {
-		case "house":
-			lines.push({ label: "Population", value: `+${building.population}` });
-			break;
-		case "store":
-			lines.push({
-				label: "Jobs needed",
-				value: `${BUILDINGS.store.jobsNeeded}`,
-			});
-			lines.push({ label: "Customers", value: `${building.customers}` });
-			lines.push({ label: "Revenue", value: `$${building.revenue}/day` });
-			lines.push({
-				label: "Tax / customer",
-				value: `$${BUILDINGS.store.taxPerCustomer}`,
-			});
-			break;
-		case "power":
-			lines.push({
-				label: "Power supply",
-				value: `+${BUILDINGS.power.powerSupply}`,
-			});
-			break;
-		case "water":
-			lines.push({
-				label: "Water supply",
-				value: `+${BUILDINGS.water.waterSupply}`,
-			});
-			break;
-	}
-
-	if (config.powerUse > 0) {
-		lines.push({ label: "Power use", value: `−${config.powerUse}` });
-	}
-
-	if (config.waterUse > 0) {
-		lines.push({ label: "Water use", value: `−${config.waterUse}` });
-	}
-
-	if (building.upkeep > 0) {
-		lines.push({ label: "Upkeep", value: `−$${building.upkeep}/day` });
-	}
-
-	return lines;
 }

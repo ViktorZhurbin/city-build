@@ -1,5 +1,5 @@
 // The durable, persisted truth of a city. Everything else (powered/watered/
-// active, revenue, totals) is *derived* from this by `resolve` — never stored
+// staffed, revenue, totals) is *derived* from this by `resolve` — never stored
 // here. Keeping state to the bare facts is what lets the read and write paths
 // share one set of rules instead of each re-deriving them.
 

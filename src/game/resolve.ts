@@ -15,20 +15,51 @@ import { type Building, type Buildings, selectAll } from "@/game/state";
 // Every pass reads the flags the prior set and writes its own onto the building.
 
 // A building after the sim has run: its durable facts plus everything derived
-// this tick. All numbers are *live* — a dark house reads population 0, an idle
-// store reads customers/revenue 0 — never nominal CONFIG figures.
+// this tick. All numbers are *live* — an offline house reads population 0, an
+// idle store reads customers/revenue 0 — never nominal CONFIG figures.
 export interface ResolvedBuilding extends Building {
 	powered: boolean;
 	watered: boolean;
-	active: boolean; // stores only: powered + watered + staffed
+	staffed: boolean; // stores only: online (powered + watered) AND has workers
 	population: number; // houses only
 	customers: number; // stores only: served this tick
 	revenue: number; // stores only: customers × tax
 	upkeep: number; // utilities only
 }
 
-export function isOperable(building?: ResolvedBuilding): boolean {
+export function isOnline(building?: ResolvedBuilding): boolean {
 	return !!building && building.powered && building.watered;
+}
+
+// Why a building underperforms, derived from the resolved state.
+// `power`/`water` are the hard *offline* deficits (the offline tile);
+// `noWorkers`/`noCustomers` are the *idle* store states that earn
+// $0 while still being online (powered + watered), so they aren't offline.
+// A store is only ever offline OR idle, never both, since idle presumes online.
+type OfflineIssue = "power" | "water";
+type IdleIssue = "noWorkers" | "noCustomers";
+export type BuildingIssue = OfflineIssue | IdleIssue;
+
+export function buildingIssues(building: ResolvedBuilding): BuildingIssue[] {
+	const issues: BuildingIssue[] = [];
+
+	if (!building.powered) {
+		issues.push("power");
+	}
+
+	if (!building.watered) {
+		issues.push("water");
+	}
+
+	const isStoreOnline = building.type === "store" && isOnline(building);
+
+	if (isStoreOnline && !building.staffed) {
+		issues.push("noWorkers");
+	} else if (isStoreOnline && building.customers === 0) {
+		issues.push("noCustomers");
+	}
+
+	return issues;
 }
 
 export interface CityTotals {
@@ -37,7 +68,7 @@ export interface CityTotals {
 	waterSupply: number;
 	waterDemand: number;
 	population: number;
-	jobs: number; // offered by operable stores (the labour they'd draw if staffed)
+	jobs: number; // offered by online stores (the labour they'd draw if staffed)
 	customersServed: number;
 	revenue: number;
 	upkeep: number;
@@ -64,7 +95,7 @@ export function resolve(buildings: Buildings): Resolved {
 				...building,
 				powered: false,
 				watered: false,
-				active: false,
+				staffed: false,
 				population: 0,
 				customers: 0,
 				revenue: 0,
@@ -74,7 +105,7 @@ export function resolve(buildings: Buildings): Resolved {
 	);
 
 	// 1. Power — every building draws its powerUse greedily (plants draw 0, so
-	//    they're always powered); once supply runs out, the rest go dark.
+	//    they're always powered); once supply runs out, the rest go offline.
 	const powerSupply =
 		resolvedBuildings.filter((building) => building.type === "power").length *
 		BUILDINGS.power.powerSupply;
@@ -120,9 +151,9 @@ export function resolve(buildings: Buildings): Resolved {
 	let population = 0;
 
 	for (const building of resolvedBuildings) {
-		const isOperableHouse = building.type === "house" && isOperable(building);
+		const isHouseOnline = building.type === "house" && isOnline(building);
 
-		if (isOperableHouse) {
+		if (isHouseOnline) {
 			building.population = BUILDINGS.house.population;
 			population += BUILDINGS.house.population;
 		}
@@ -135,28 +166,28 @@ export function resolve(buildings: Buildings): Resolved {
 	let jobs = 0;
 
 	for (const building of resolvedBuildings) {
-		const isOperableStore = building.type === "store" && isOperable(building);
+		const isStoreOnline = building.type === "store" && isOnline(building);
 
-		if (isOperableStore) {
+		if (isStoreOnline) {
 			jobs += BUILDINGS.store.jobsNeeded;
 		}
 
-		const staffed = isOperableStore && labourLeft >= BUILDINGS.store.jobsNeeded;
+		const staffed = isStoreOnline && labourLeft >= BUILDINGS.store.jobsNeeded;
 
 		if (staffed) {
 			labourLeft -= BUILDINGS.store.jobsNeeded;
 		}
 
-		building.active = staffed;
+		building.staffed = staffed;
 	}
 
-	// 5. Customers — the same population shops, handed out greedily across active
+	// 5. Customers — the same population shops, handed out greedily across staffed
 	//    stores (divisible: a store serves up to customersServed, partial allowed).
 	let shoppersLeft = population;
 	let customersServed = 0;
 
 	for (const building of resolvedBuildings) {
-		if (!building.active) {
+		if (!building.staffed) {
 			continue;
 		}
 

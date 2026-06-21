@@ -26,12 +26,11 @@
 	--color-power-dark: color-mix(in oklch, var(--color-power), black 40%);
 	--color-water-dark: color-mix(in oklch, var(--color-water), black 40%);
 
-	/* Danger */
 	--color-danger: oklch(0.59 0.2 27);
 	--color-danger-bright: color-mix(in oklch, var(--color-danger), white 35%);
-
-	/* Positive — green, for gains (e.g. a surplus daily budget). */
-	--color-positive: oklch(0.7 0.18 147);
+	--color-warning: oklch(0.75 0.15 75);
+	--color-warning-bright: color-mix(in oklch, var(--color-warning), white 35%);
+	--color-success: oklch(0.7 0.18 147);
 
 	/* One tile edge — shared by the grid track sizing and the tiles themselves. */
 	--tile-size: 40px;

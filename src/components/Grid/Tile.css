@@ -1,4 +1,5 @@
 .tile {
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -33,7 +34,34 @@
 		background: var(--color-water);
 	}
 
-	&[data-dark="true"] {
-		filter: grayscale(0.7) brightness(0.4);
+	/* A darkening overlay (not a whole-element filter) so the warning badges on
+	   top stay vivid — offline tiles are exactly where the cue matters most. It
+	   sits above the letter (dimming it) but below .tile-badges. */
+	&[data-offline="true"]::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: oklch(0 0 0 / 0.6);
+		pointer-events: none;
 	}
+}
+
+/* Problem cues: emoji chips in the top-right corner, one per issue (⚡/💧 for an
+   offline tile, 💤 for an idle store). Above the offline overlay so they stay
+   readable; the tooltip carries the full "what + why". */
+.tile-badges {
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	z-index: 1;
+	display: flex;
+	gap: 1px;
+	line-height: 1;
+	pointer-events: none;
+}
+
+.tile-badge {
+	font-size: var(--font-xs);
+	filter: drop-shadow(0 1px 1px oklch(0 0 0 / 0.5));
 }

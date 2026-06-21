@@ -31,13 +31,16 @@
 }
 
 /* Bulldozer armed: occupied tiles are the targets, flagged danger-red on hover
-   (overriding the dark/grayscale filter so the warning always reads). */
+   (suppressing the offline overlay so the warning always reads). */
 .grid[data-selected="demolish"] .tile:not([data-type="empty"]) {
 	cursor: pointer;
 
 	&:hover {
 		background: var(--color-danger);
 		box-shadow: inset 0 0 0 2px var(--color-danger-bright);
-		filter: none;
+	}
+
+	&:hover::after {
+		display: none;
 	}
 }

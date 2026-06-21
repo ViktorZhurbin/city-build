@@ -3,7 +3,7 @@
 	font-weight: 600;
 
 	&[data-trend="up"] {
-		color: var(--color-positive);
+		color: var(--color-success);
 	}
 
 	&[data-trend="down"] {

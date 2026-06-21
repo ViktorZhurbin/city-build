@@ -3,6 +3,37 @@
 	margin-bottom: 6px;
 }
 
+.stat-card-alerts {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-bottom: 6px;
+}
+
+.stat-card-alert {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 6px;
+	border-radius: var(--radius-sm);
+	font-size: var(--font-xs);
+	font-weight: 600;
+
+	&[data-severity="offline"] {
+		background: color-mix(in oklch, var(--color-danger), transparent 82%);
+		color: var(--color-danger-bright);
+	}
+	&[data-severity="idle"] {
+		background: color-mix(in oklch, var(--color-warning), transparent 82%);
+		color: var(--color-warning-bright);
+	}
+}
+
+.stat-card-alert-icon {
+	font-size: var(--font-sm);
+	line-height: 1;
+}
+
 .stat-card-row {
 	display: flex;
 	justify-content: space-between;
