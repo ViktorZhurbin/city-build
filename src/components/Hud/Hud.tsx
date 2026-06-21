@@ -1,4 +1,5 @@
 import "./Hud.css";
+import { Show } from "solid-js";
 import type { CityStats } from "@/game/selectors";
 import { Money } from "./Money";
 import { Stat } from "./Stat";
@@ -26,9 +27,11 @@ export function Hud(props: {
 				<Stat icon="👥" value={props.stats.population} />
 			</div>
 
-			<button type="button" class="hud-reset" onClick={() => props.onReset()}>
-				Reset
-			</button>
+			<Show when={import.meta.env.DEV}>
+				<button type="button" class="hud-reset" onClick={() => props.onReset()}>
+					Reset
+				</button>
+			</Show>
 		</div>
 	);
 }
