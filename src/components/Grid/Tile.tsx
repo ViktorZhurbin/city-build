@@ -1,7 +1,8 @@
 import "./Tile.css";
-import { CONFIG } from "../CONFIG";
-import type { ResolvedBuilding } from "../game/resolve";
-import { StatCard, type StatLine, Tooltip } from "./Tooltip";
+import { CONFIG } from "../../CONFIG";
+import type { ResolvedBuilding } from "../../game/resolve";
+import { StatCard, type StatLine } from "../ui/StatCard";
+import { Tooltip } from "../ui/Tooltip";
 
 const LETTERS: Record<string, string> = {
 	house: "H",

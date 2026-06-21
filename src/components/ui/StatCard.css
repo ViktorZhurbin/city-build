@@ -1,0 +1,20 @@
+.statcard-title {
+	font-weight: 600;
+	margin-bottom: 0.35rem;
+}
+
+.statcard-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	line-height: 1.5;
+}
+
+.statcard-label {
+	opacity: 0.7;
+}
+
+.statcard-value {
+	font-variant-numeric: tabular-nums;
+	font-weight: 600;
+}

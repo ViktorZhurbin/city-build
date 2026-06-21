@@ -28,24 +28,3 @@
 .tooltip-arrow {
 	color: #161b22;
 }
-
-.tooltip-title {
-	font-weight: 600;
-	margin-bottom: 0.35rem;
-}
-
-.tooltip-row {
-	display: flex;
-	justify-content: space-between;
-	gap: 1rem;
-	line-height: 1.5;
-}
-
-.tooltip-label {
-	opacity: 0.7;
-}
-
-.tooltip-value {
-	font-variant-numeric: tabular-nums;
-	font-weight: 600;
-}
