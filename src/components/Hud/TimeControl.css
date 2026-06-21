@@ -1,0 +1,76 @@
+.time {
+	display: flex;
+	align-items: stretch;
+	gap: 6px;
+}
+
+.time-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 34px;
+	padding: 2px 8px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	background: var(--color-control);
+	color: var(--color-text);
+	font-size: var(--font-sm);
+	cursor: pointer;
+
+	&:hover {
+		background: var(--color-control-hover);
+	}
+}
+
+.time-date {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-width: 92px;
+	padding: 2px 12px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	background: var(--color-control);
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+.time-progress {
+	display: block;
+	width: 100%;
+}
+
+.time-progress-track {
+	display: block;
+	width: 100%;
+	height: 3px;
+	margin-top: 2px;
+	border-radius: var(--radius-sm);
+	background: var(--color-border);
+	overflow: hidden;
+}
+
+.time-progress-fill {
+	display: block;
+	height: 100%;
+	/* Kobalte's Progress exposes the filled fraction as this custom property. */
+	width: var(--kb-progress-fill-width);
+	background: var(--color-accent-bright);
+	transition: width var(--transition) linear;
+}
+
+.time-chevrons {
+	display: inline-flex;
+	font-size: var(--font-xs);
+	letter-spacing: -3px;
+
+	& span {
+		opacity: 0.25;
+	}
+
+	&[data-speed="1"] span:nth-child(-n + 1),
+	&[data-speed="2"] span:nth-child(-n + 2),
+	&[data-speed="3"] span:nth-child(-n + 3) {
+		opacity: 1;
+	}
+}
