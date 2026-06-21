@@ -7,6 +7,7 @@ export const STARTING_MONEY = 1000;
 // visible day number + an end-of-day budget sheet (SimCity-style revenue /
 // expense breakdown).
 export const TICKS_PER_DAY = 8;
+export const TICK_MS = 1500;
 
 // Bulldozing hands back this fraction of the build cost — the escape hatch from
 // a broke/over-built city: raze, recover some cash, rebuild. Less than 1 so

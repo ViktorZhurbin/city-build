@@ -1,4 +1,5 @@
 import "./Hud.css";
+import { Index } from "solid-js";
 import type { CityStats } from "@/game/selectors";
 
 const SPEEDS: { value: number; label: string }[] = [
@@ -14,59 +15,59 @@ export function Hud(props: {
 	onSpeed: (speed: number) => void;
 	onReset: () => void;
 }) {
-	const cityStats = () => props.stats;
-
 	return (
 		<div class="hud">
 			<span class="hud-item">
 				<span class="hud-label">DAY</span>
-				{cityStats().day}
+				{props.stats.day}
 				<span class="hud-day-bar">
 					<span
 						class="hud-day-fill"
-						style={{ width: `${cityStats().dayProgress * 100}%` }}
+						style={{ width: `${props.stats.dayProgress * 100}%` }}
 					/>
 				</span>
 			</span>
 			<span class="hud-item">
 				<span class="hud-label">$</span>
-				{cityStats().money}
+				{props.stats.money}
 			</span>
 			<span class="hud-item">
 				<span class="hud-label">$/DAY</span>
-				{cityStats().dailyBudget >= 0
-					? `+${cityStats().dailyBudget}`
-					: cityStats().dailyBudget}
+				{props.stats.dailyBudget >= 0
+					? `+${props.stats.dailyBudget}`
+					: props.stats.dailyBudget}
 			</span>
 			<span class="hud-item">
 				<span class="hud-label">PWR</span>
-				{cityStats().powerSupply}/{cityStats().powerDemand}
+				{props.stats.powerSupply}/{props.stats.powerDemand}
 			</span>
 			<span class="hud-item">
 				<span class="hud-label">H₂O</span>
-				{cityStats().waterSupply}/{cityStats().waterDemand}
+				{props.stats.waterSupply}/{props.stats.waterDemand}
 			</span>
 			<span class="hud-item">
 				<span class="hud-label">POP</span>
-				{cityStats().population}
+				{props.stats.population}
 			</span>
 			<span class="hud-item">
 				<span class="hud-label">JOBS</span>
-				{cityStats().jobs}
+				{props.stats.jobs}
 			</span>
 			<span class="hud-speed">
 				<span class="hud-label">SPEED</span>
 				<span class="hud-speed-btns">
-					{SPEEDS.map((option) => (
-						<button
-							type="button"
-							class="hud-speed-btn"
-							data-active={props.speed === option.value ? "true" : "false"}
-							onClick={() => props.onSpeed(option.value)}
-						>
-							{option.label}
-						</button>
-					))}
+					<Index each={SPEEDS}>
+						{(option) => (
+							<button
+								type="button"
+								class="hud-speed-btn"
+								data-active={props.speed === option().value ? "true" : "false"}
+								onClick={() => props.onSpeed(option().value)}
+							>
+								{option().label}
+							</button>
+						)}
+					</Index>
 				</span>
 			</span>
 			<button type="button" class="hud-reset" onClick={() => props.onReset()}>

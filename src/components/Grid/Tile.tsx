@@ -1,17 +1,19 @@
 import "./Tile.css";
+import { Show } from "solid-js";
 import { StatCard, type StatLine } from "@/components/ui/StatCard";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { BUILDINGS } from "@/game/balance";
-import type { ResolvedBuilding } from "@/game/resolve";
+import { isOperable, type ResolvedBuilding } from "@/game/resolve";
+import type { BuildingType } from "@/game/state";
 
-const LETTERS: Record<string, string> = {
+const LETTERS: Record<BuildingType, string> = {
 	house: "H",
 	store: "S",
 	power: "P",
 	water: "W",
 };
 
-const LABELS: Record<string, string> = {
+const LABELS: Record<BuildingType, string> = {
 	house: "House",
 	store: "Store",
 	power: "Power plant",
@@ -23,50 +25,40 @@ export function Tile(props: {
 	building: ResolvedBuilding | undefined;
 	onClick: (pos: number) => void;
 }) {
-	const building = () => props.building;
-
-	const dark = () => {
-		const bld = building();
-
-		return !!bld && !(bld.powered && bld.watered);
-	};
-
 	// A function, not a stored element: each branch below must create its OWN
 	// button node. Reusing a single JSX-element variable across both arms of the
 	// conditional teleports the one node between them when a cell toggles
 	// empty↔filled, which leaves Kobalte's tooltip trigger span empty.
-	const tileButton = () => (
-		<button
-			type="button"
-			class="tile"
-			data-type={building()?.type ?? "empty"}
-			data-dark={dark() ? "true" : "false"}
-			onClick={() => props.onClick(props.pos)}
-		>
-			{building() ? LETTERS[building()?.type ?? ""] : ""}
-		</button>
-	);
+	const tileButton = () => {
+		return (
+			<button
+				type="button"
+				class="tile"
+				data-type={props.building?.type ?? "empty"}
+				data-dark={
+					props.building && !isOperable(props.building) ? "true" : "false"
+				}
+				onClick={() => props.onClick(props.pos)}
+			>
+				{props.building?.type ? LETTERS[props.building.type] : ""}
+			</button>
+		);
+	};
 
 	// Empty cells carry no stats, so they get no tooltip — only placed buildings
 	// are wrapped, mirroring how the toolbar wraps its tool buttons.
 	return (
-		<>
-			{building() ? (
+		<Show when={props.building} fallback={tileButton()}>
+			{(bld) => (
 				<Tooltip
 					content={
-						<StatCard
-							title={LABELS[building()?.type ?? ""]}
-							// biome-ignore lint/style/noNonNullAssertion: guarded by building()
-							lines={tileStats(building()!)}
-						/>
+						<StatCard title={LABELS[bld().type]} lines={tileStats(bld())} />
 					}
 				>
 					{tileButton()}
 				</Tooltip>
-			) : (
-				tileButton()
 			)}
-		</>
+		</Show>
 	);
 }
 

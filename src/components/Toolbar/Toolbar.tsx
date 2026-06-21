@@ -1,4 +1,5 @@
 import "./Toolbar.css";
+import { Index } from "solid-js";
 import { StatCard, type StatLine } from "@/components/ui/StatCard";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { BUILDINGS, DEMOLISH_REFUND } from "@/game/balance";
@@ -24,29 +25,34 @@ export function Toolbar(props: {
 	return (
 		<div class="toolbar">
 			<div class="toolbar-buildings">
-				{BUILDING_TYPES.map((type) => {
-					const unaffordable = () => BUILDINGS[type].cost > props.money;
+				<Index each={BUILDING_TYPES}>
+					{(type) => {
+						const unaffordable = () => BUILDINGS[type()].cost > props.money;
 
-					return (
-						<Tooltip
-							content={
-								<StatCard title={LABELS[type]} lines={buildingStats(type)} />
-							}
-						>
-							<button
-								type="button"
-								class="tool-btn"
-								data-type={type}
-								data-active={props.selected === type ? "true" : "false"}
-								disabled={unaffordable()}
-								onClick={() => toggle(type)}
+						return (
+							<Tooltip
+								content={
+									<StatCard
+										title={LABELS[type()]}
+										lines={buildingStats(type())}
+									/>
+								}
 							>
-								{LABELS[type]}
-								<span class="tool-cost">${BUILDINGS[type].cost}</span>
-							</button>
-						</Tooltip>
-					);
-				})}
+								<button
+									type="button"
+									class="tool-btn"
+									data-type={type()}
+									data-active={props.selected === type() ? "true" : "false"}
+									disabled={unaffordable()}
+									onClick={() => toggle(type())}
+								>
+									{LABELS[type()]}
+									<span class="tool-cost">${BUILDINGS[type()].cost}</span>
+								</button>
+							</Tooltip>
+						);
+					}}
+				</Index>
 			</div>
 			<Tooltip
 				content={

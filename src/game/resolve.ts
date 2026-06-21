@@ -27,6 +27,10 @@ export interface ResolvedBuilding extends Building {
 	upkeep: number; // utilities only
 }
 
+export function isOperable(building?: ResolvedBuilding): boolean {
+	return !!building && building.powered && building.watered;
+}
+
 export interface CityTotals {
 	powerSupply: number;
 	powerDemand: number;
@@ -116,10 +120,9 @@ export function resolve(buildings: Buildings): Resolved {
 	let population = 0;
 
 	for (const building of resolvedBuildings) {
-		const operableHouse =
-			building.type === "house" && building.powered && building.watered;
+		const isOperableHouse = building.type === "house" && isOperable(building);
 
-		if (operableHouse) {
+		if (isOperableHouse) {
 			building.population = BUILDINGS.house.population;
 			population += BUILDINGS.house.population;
 		}
@@ -132,14 +135,13 @@ export function resolve(buildings: Buildings): Resolved {
 	let jobs = 0;
 
 	for (const building of resolvedBuildings) {
-		const suppliedStore =
-			building.type === "store" && building.powered && building.watered;
+		const isOperableStore = building.type === "store" && isOperable(building);
 
-		if (suppliedStore) {
+		if (isOperableStore) {
 			jobs += BUILDINGS.store.jobsNeeded;
 		}
 
-		const staffed = suppliedStore && labourLeft >= BUILDINGS.store.jobsNeeded;
+		const staffed = isOperableStore && labourLeft >= BUILDINGS.store.jobsNeeded;
 
 		if (staffed) {
 			labourLeft -= BUILDINGS.store.jobsNeeded;

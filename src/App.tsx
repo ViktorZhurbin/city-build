@@ -1,10 +1,10 @@
+import "./App.css";
 import { createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
-import "./App.css";
 import { Grid } from "@/components/Grid/Grid";
 import { Hud } from "@/components/Hud/Hud";
 import { Toolbar } from "@/components/Toolbar/Toolbar";
-import { STARTING_MONEY } from "@/game/balance";
+import { STARTING_MONEY, TICK_MS } from "@/game/balance";
 import { demolish, place, tick } from "@/game/reducers";
 import { resolve } from "@/game/resolve";
 import { toCells, toCityStats } from "@/game/selectors";
@@ -13,8 +13,8 @@ import { clearCity, loadCity, saveCity } from "@/game/storage";
 import type { Tool } from "@/game/types";
 
 const freshCity = (): City => ({
-	money: STARTING_MONEY,
 	tick: 0,
+	money: STARTING_MONEY,
 	buildings: emptyBuildings(),
 });
 
@@ -29,7 +29,6 @@ const App = () => {
 
 	// Tick speed as a multiplier; 0 means paused. Drives the sim interval below.
 	const [speed, setSpeed] = createSignal(1);
-	const BASE_TICK_MS = 1500;
 
 	// One resolved snapshot per change drives everything downstream — the HUD
 	// totals, the per-cell buildings, and tick's money settle. createMemo is the
@@ -46,12 +45,12 @@ const App = () => {
 	// Re-runs whenever speed changes: clears the old interval (via onCleanup) and
 	// starts one at the new rate, or none at all when paused.
 	createEffect(() => {
-		const currentSpeed = speed();
-		if (currentSpeed === 0) return;
+		if (speed() === 0) return;
 
 		const id = setInterval(() => {
 			setCity(reconcile(tick(unwrap(city))));
-		}, BASE_TICK_MS / currentSpeed);
+		}, TICK_MS / speed());
+
 		onCleanup(() => clearInterval(id));
 	});
 
@@ -67,6 +66,7 @@ const App = () => {
 		if (!tool) return;
 
 		const current = unwrap(city);
+
 		const next =
 			tool === "demolish" ? demolish(current, pos) : place(current, tool, pos);
 
@@ -86,15 +86,15 @@ const App = () => {
 				onSpeed={setSpeed}
 				onReset={handleReset}
 			/>
-			<Toolbar
-				selected={selected()}
-				money={city.money}
-				onSelect={setSelected}
-			/>
 			<Grid
 				cells={cells()}
 				selected={selected()}
 				onTileClick={handleTileClick}
+			/>
+			<Toolbar
+				money={city.money}
+				selected={selected()}
+				onSelect={setSelected}
 			/>
 		</div>
 	);

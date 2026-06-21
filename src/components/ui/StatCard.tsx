@@ -1,3 +1,4 @@
+import { Index } from "solid-js";
 import "./StatCard.css";
 
 export interface StatLine {
@@ -11,13 +12,15 @@ export interface StatLine {
 export function StatCard(props: { title: string; lines: StatLine[] }) {
 	return (
 		<div>
-			<div class="statcard-title">{props.title}</div>
-			{props.lines.map((line) => (
-				<div class="statcard-row">
-					<span class="statcard-label">{line.label}</span>
-					<span class="statcard-value">{line.value}</span>
-				</div>
-			))}
+			<div class="stat-card-title">{props.title}</div>
+			<Index each={props.lines}>
+				{(line) => (
+					<div class="stat-card-row">
+						<span class="stat-card-label">{line().label}</span>
+						<span class="stat-card-value">{line().value}</span>
+					</div>
+				)}
+			</Index>
 		</div>
 	);
 }
