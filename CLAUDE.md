@@ -62,7 +62,7 @@ the old pattern of per-question selectors that each re-walk the buildings.
 npm run dev        # start dev server (http://localhost:3000) - use NPM for dev
 bun run build      # production build
 bun run preview    # preview production build locally
-bun run check      # Biome (lint + format) and tsc (Biome writes fixes in place)
+bun run check      # Build, tsc, Biome (lint + format) (Biome writes fixes in place)
 ```
 
 To verify changes, run `bun run check`.
