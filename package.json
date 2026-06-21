@@ -4,8 +4,10 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "rsbuild build",
 		"dev": "rsbuild dev",
+		"build": "rsbuild build",
+		"dev:rsdoctor": "RSDOCTOR=true rsbuild",
+		"build:rsdoctor": "RSDOCTOR=true rsbuild build",
 		"preview": "rsbuild preview",
 		"lint-format": "biome check --write .",
 		"type-check": "tsc",
@@ -20,6 +22,7 @@
 		"@rsbuild/core": "^2",
 		"@rsbuild/plugin-babel": "^2",
 		"@rsbuild/plugin-solid": "^1",
+		"@rsdoctor/rspack-plugin": "^1.5.15",
 		"@types/node": "^24",
 		"typescript": "^6"
 	}
