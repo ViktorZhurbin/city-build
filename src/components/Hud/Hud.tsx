@@ -3,6 +3,7 @@ import { Progress } from "@kobalte/core/progress";
 import { ToggleGroup } from "@kobalte/core/toggle-group";
 import { Index } from "solid-js";
 import type { CityStats } from "@/game/selectors";
+import { Money } from "./Money";
 
 const SPEEDS: { value: number; label: string }[] = [
 	{ value: 0, label: "❚❚" },
@@ -32,16 +33,7 @@ export function Hud(props: {
 					</Progress.Track>
 				</Progress>
 			</span>
-			<span class="hud-item">
-				<span class="hud-label">$</span>
-				{props.stats.money}
-			</span>
-			<span class="hud-item">
-				<span class="hud-label">$/DAY</span>
-				{props.stats.dailyBudget >= 0
-					? `+${props.stats.dailyBudget}`
-					: props.stats.dailyBudget}
-			</span>
+			<Money money={props.stats.money} dailyBudget={props.stats.dailyBudget} />
 			<span class="hud-item">
 				<span class="hud-label">PWR</span>
 				{props.stats.powerSupply}/{props.stats.powerDemand}

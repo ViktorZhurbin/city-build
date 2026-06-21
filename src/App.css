@@ -30,6 +30,9 @@
 	--color-danger: oklch(0.59 0.2 27);
 	--color-danger-bright: color-mix(in oklch, var(--color-danger), white 35%);
 
+	/* Positive — green, for gains (e.g. a surplus daily budget). */
+	--color-positive: oklch(0.7 0.18 147);
+
 	/* One tile edge — shared by the grid track sizing and the tiles themselves. */
 	--tile-size: 40px;
 
