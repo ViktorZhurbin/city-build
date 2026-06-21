@@ -1,5 +1,5 @@
 import "./Hud.css";
-import type { CityStats } from "../logic/stats";
+import type { CityStats } from "../game/selectors";
 
 const SPEEDS: { value: number; label: string }[] = [
 	{ value: 0, label: "❚❚" },

@@ -1,13 +1,12 @@
 import "./Grid.css";
 import { Index } from "solid-js";
 import { CELL_COUNT, GRID_SIZE } from "../CONFIG";
-import type { BuildingContribution } from "../logic/simulation";
-import type { Building, Tool } from "../types";
+import type { ResolvedBuilding } from "../game/resolve";
+import type { Tool } from "../types";
 import { Tile } from "./Tile";
 
 export function Grid(props: {
-	cells: (Building | undefined)[];
-	stats: Map<number, BuildingContribution>;
+	cells: (ResolvedBuilding | undefined)[];
 	selected: Tool | null;
 	onTileClick: (pos: number) => void;
 }) {
@@ -21,12 +20,7 @@ export function Grid(props: {
 		>
 			<Index each={Array.from({ length: CELL_COUNT })}>
 				{(_, i) => (
-					<Tile
-						pos={i}
-						building={props.cells[i]}
-						stats={props.stats.get(i)}
-						onClick={props.onTileClick}
-					/>
+					<Tile pos={i} building={props.cells[i]} onClick={props.onTileClick} />
 				)}
 			</Index>
 		</div>

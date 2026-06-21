@@ -1,17 +1,6 @@
-export type BuildingType = "house" | "store" | "power" | "water";
+import type { BuildingType } from "./game/state";
 
 // What the toolbar can have selected: a building to place, or the bulldozer.
+// The domain types (BuildingType, Building, City) live in game/state.ts; this
+// file holds only UI-level types.
 export type Tool = BuildingType | "demolish";
-
-export interface Building {
-	type: BuildingType;
-	pos: number; // cell index 0..CELL_COUNT-1; stable identity, ignored by the sim
-	powered: boolean; // computed each tick — did supply reach it?
-	watered: boolean;
-	active: boolean; // a store is "active" only if powered, watered AND staffed
-}
-export interface City {
-	money: number;
-	buildings: Building[];
-	tick: number; // ticks elapsed; the budget settles every TICKS_PER_DAY
-}

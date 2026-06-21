@@ -1,6 +1,7 @@
 import "./Toolbar.css";
 import { CONFIG, DEMOLISH_REFUND } from "../CONFIG";
-import type { BuildingType, Tool } from "../types";
+import type { BuildingType } from "../game/state";
+import type { Tool } from "../types";
 import { StatCard, type StatLine, Tooltip } from "./Tooltip";
 
 const BUILDING_TYPES: BuildingType[] = ["house", "store", "power", "water"];

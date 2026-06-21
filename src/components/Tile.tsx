@@ -1,7 +1,6 @@
 import "./Tile.css";
 import { CONFIG } from "../CONFIG";
-import type { BuildingContribution } from "../logic/simulation";
-import type { Building } from "../types";
+import type { ResolvedBuilding } from "../game/resolve";
 import { StatCard, type StatLine, Tooltip } from "./Tooltip";
 
 const LETTERS: Record<string, string> = {
@@ -20,8 +19,7 @@ const LABELS: Record<string, string> = {
 
 export function Tile(props: {
 	pos: number;
-	building: Building | undefined;
-	stats: BuildingContribution | undefined;
+	building: ResolvedBuilding | undefined;
 	onClick: (pos: number) => void;
 }) {
 	const building = () => props.building;
@@ -32,7 +30,11 @@ export function Tile(props: {
 		return !!bld && !(bld.powered && bld.watered);
 	};
 
-	const tile = (
+	// A function, not a stored element: each branch below must create its OWN
+	// button node. Reusing a single JSX-element variable across both arms of the
+	// conditional teleports the one node between them when a cell toggles
+	// empty↔filled, which leaves Kobalte's tooltip trigger span empty.
+	const tileButton = () => (
 		<button
 			type="button"
 			class="tile"
@@ -54,14 +56,14 @@ export function Tile(props: {
 						<StatCard
 							title={LABELS[building()?.type ?? ""]}
 							// biome-ignore lint/style/noNonNullAssertion: guarded by building()
-							lines={tileStats(building()!, props.stats)}
+							lines={tileStats(building()!)}
 						/>
 					}
 				>
-					{tile}
+					{tileButton()}
 				</Tooltip>
 			) : (
-				tile
+				tileButton()
 			)}
 		</>
 	);
@@ -69,26 +71,23 @@ export function Tile(props: {
 
 // Live stat lines for one building. Static figures (draws, jobs, tax) come from
 // CONFIG; the headline numbers the player cares about — population, served
-// customers, revenue, upkeep — come from `stats`, so they reflect the building's
-// actual state (a dark house reads +0, an over-saturated store reads $0). No
-// status line: "offline" is already the dimmed tile, and a stalled store reads
-// as Customers 0 / Revenue $0.
-function tileStats(
-	building: Building,
-	stats: BuildingContribution | undefined,
-): StatLine[] {
+// customers, revenue, upkeep — come straight off the resolved building, so they
+// reflect its actual state (a dark house reads +0, an over-saturated store reads
+// $0). No status line: "offline" is already the dimmed tile, and a stalled store
+// reads as Customers 0 / Revenue $0.
+function tileStats(building: ResolvedBuilding): StatLine[] {
 	const lines: StatLine[] = [];
 
 	const config = CONFIG[building.type];
 
 	switch (building.type) {
 		case "house":
-			lines.push({ label: "Population", value: `+${stats?.population ?? 0}` });
+			lines.push({ label: "Population", value: `+${building.population}` });
 			break;
 		case "store":
 			lines.push({ label: "Jobs needed", value: `${CONFIG.store.jobsNeeded}` });
-			lines.push({ label: "Customers", value: `${stats?.customers ?? 0}` });
-			lines.push({ label: "Revenue", value: `$${stats?.revenue ?? 0}/day` });
+			lines.push({ label: "Customers", value: `${building.customers}` });
+			lines.push({ label: "Revenue", value: `$${building.revenue}/day` });
 			lines.push({
 				label: "Tax / customer",
 				value: `$${CONFIG.store.taxPerCustomer}`,
@@ -116,8 +115,8 @@ function tileStats(
 		lines.push({ label: "Water use", value: `−${config.waterUse}` });
 	}
 
-	if (stats && stats.upkeep > 0) {
-		lines.push({ label: "Upkeep", value: `−$${stats.upkeep}/day` });
+	if (building.upkeep > 0) {
+		lines.push({ label: "Upkeep", value: `−$${building.upkeep}/day` });
 	}
 
 	return lines;

@@ -2,9 +2,11 @@
 
 A deliberately minimal city-builder game, built to answer one question: is the core loop fun? Nothing else. This is a playable experiment, not a product. Coloured grid tiles with a letter or icon are the entire visual language.
 
+> **Keep this file true.** It's the reference later threads (and we) lean on. Whenever a change makes something here no longer accurate — a renamed file, a dropped abstraction, a reworked rule — update the stale line in the same change, don't leave it for later.
+
 ## The whole game in one paragraph
 
-There is a grid. The player places one of **four building types**: House, Store, Power Plant, Water Plant. There are **two resources** (power, water) plus **money**. Every ~1.5s a `tick()` recalculates the whole simulation.
+There is a grid. The player places one of **four building types**: House, Store, Power Plant, Water Plant. There are **two resources** (power, water) plus **money**. Every ~1.5s a `tick()` advances the clock; `resolve()` recomputes the whole simulation from the buildings whenever they change.
 
 The dependency chain is the engine:
 
@@ -16,11 +18,11 @@ All tunable numbers live in the `CONFIG.ts`. Balance happens there, nowhere else
 
 A stripped-down SimCity / Cities: Skylines. We borrow their three economic pillars and nothing else:
 
-1. Revenue is **demand-bound** — capped by `population` (`customersServed` in `simulation.ts`), so it's sublinear while utility upkeep grows with the city. The two cross → there's an optimal city size, and overbuilding bleeds money.
+1. Revenue is **demand-bound** — capped by `population` (`customersServed`, in `game/resolve.ts`), so it's sublinear while utility upkeep grows with the city. The two cross → there's an optimal city size, and overbuilding bleeds money.
 2. **Utilities are sinks, never sources** — power/water cost to build _and_ an `upkeep` per day. Houses and stores carry no upkeep: **stores are the only income** (commerce tax), and houses feed them the people that income is bound to.
 3. **Growth follows demand** (the RCI loop): houses ≈ Residential, stores ≈ Commercial; no Industrial. Stores want people (workers + customers), houses want jobs + utilities.
 
-**Two clocks:** every ~1.5s a `tick()` runs the _physical_ sim (power → water → jobs allocation). Money only moves on the **day** boundary (`TICKS_PER_DAY`), when the budget settles as `revenue − upkeep`.
+**Two clocks:** the _physical_ sim (power → water → jobs → customers) is pure — `resolve()` recomputes it from the buildings on demand, not on a timer. `tick()` (every ~1.5s) only advances the clock; money moves on the **day** boundary (`TICKS_PER_DAY`), when the budget settles as `revenue − upkeep`.
 
 **Deferred** (noted inline where they'd go): an end-of-day budget sheet popup (SimCity-style revenue/expense breakdown); a player-set tax-rate slider (the income-vs-growth dial).
 
@@ -29,16 +31,30 @@ A stripped-down SimCity / Cities: Skylines. We borrow their three economic pilla
 The concrete rules as they stand. **Update this section whenever mechanics change** — it's the reference later threads (and we) lean on. Numbers live in `CONFIG.ts`.
 
 - **Buildings (4).** _House_ — draws power+water, produces `population`. _Store_ — draws power+water, needs `jobsNeeded` workers, serves up to `customersServed` people (capped by total population), each taxed `taxPerCustomer`. _Power plant_ — produces `powerSupply`. _Water plant_ — produces `waterSupply`, but only while itself powered.
-- **Tick resolution (`tick.ts`), in order:** (1) power allocated **greedily by placement order** — overflow buildings go dark; (2) water — only powered water plants produce, allocated the same greedy way; (3) jobs — `population` staffs powered+watered stores greedily, unstaffed stores sit idle. Placement order mattering is a feature.
-- **Money settles per day, not per tick.** Every `TICKS_PER_DAY` ticks: `money += revenue − upkeep`. `revenue` = served customers × tax (`totalRevenue`) — **stores are the only income**, houses just supply the people it's capped by; `upkeep` = **utilities only** (`totalUpkeep` — houses/stores carry no upkeep). Both live in `simulation.ts`.
+- **Sim resolution (`game/resolve.ts`), one pure pass in order:** (1) power allocated **greedily by placement order** — overflow buildings go dark; (2) water — only powered water plants produce, allocated the same greedy way; (3) jobs — `population` staffs powered+watered stores greedily, unstaffed stores sit idle; (4) customers — the same `population` shops, handed out greedily across active stores (what each store's revenue is bound to). Placement order mattering is a feature; these flags/numbers are **derived, never stored** on the building.
+- **Money settles per day, not per tick.** Every `TICKS_PER_DAY` ticks: `money += revenue − upkeep`. `revenue` = served customers × tax — **stores are the only income**, houses just supply the people it's capped by; `upkeep` = **utilities only** (houses/stores carry no upkeep). Both are fields on `resolve()`'s `totals`.
 - **Build / demolish.** Placing costs full price, blocked when unaffordable. Demolishing refunds `DEMOLISH_REFUND` of cost (the recovery lever) — bulldozer stays armed for repeat clears. No bankruptcy floor; money can go negative, but utilities-only upkeep + refund make recovery always reachable.
-- **Controls & persistence.** Speed: pause / 1× / 2× / 3× scales the tick interval. The whole `City` (money, buildings, tick) persists to `localStorage` on every change; speed/selection are view state, not saved.
+- **Controls & persistence.** Speed: pause / 1× / 2× / 3× scales the tick interval. The whole `City` (money, normalized buildings, tick) persists to `localStorage` (key `…:v2`) on every change; speed/selection are view state, not saved.
+
+## Code architecture (`src/game/`)
+
+The sim is split by role so the rules live in exactly one place. Resist re-adding
+the old pattern of per-question selectors that each re-walk the buildings.
+
+- **`state.ts`** — the durable, persisted truth: `City { money, tick, buildings }`, where `buildings` is normalized as `{ ids, entities }`. A `Building` is just `{ type, pos }` (`pos` doubles as the entity id). `ids` is placement order — **load-bearing** (every greedy pass uses it) and **never sorted**. Entity helpers: `addOne` / `removeOne` / `selectAll` / `has`.
+- **`resolve.ts`** — the engine. `resolve(buildings)` runs the whole physical sim in **one pure pass** → `Resolved { ids, entities, totals }`. Internally it's a chain of sequential greedy passes — power → water → population → jobs → customers — each its own walk over the buildings in placement order, reading the flags the prior pass set and writing its own onto the building (atomic all-or-nothing for power/water/jobs, divisible partial fills for customers). The passes must run in order: each fully settles before the next. **Derived state lives here, never on the building**: `powered/watered/active/population/customers/revenue/upkeep` are recomputed, not stored or persisted.
+- **`selectors.ts`** — read path: `toCityStats` (HUD), `toCells` (grid). Pure projections of a `Resolved`; no rules.
+- **`reducers.ts`** — write path, the only producers of a new `City`: `place` / `demolish` (player commands) and `tick` (the clock — advances the counter; settles money via `resolve` on the day boundary).
+- **`storage.ts`** — localStorage; bump the key suffix (`…:v2`) on any incompatible `City` shape change.
+
+`App.tsx` wires it: `resolve` runs inside a `createMemo` over `city.buildings` (the selector cache), feeding both the HUD and the tiles. Because flags are derived, a newly-placed building shows correct state immediately, not on the next tick.
 
 ## Code style
 
 - **No single-letter variables.** Use descriptive names everywhere — parameters, locals, callbacks. `building` not `b`, `placed` not `x`, `cityStats` not `s`.
 - **Extract boolean expressions into named variables.** Pull non-trivial conditions out of `if` statements. `const cellOccupied = ...` then `if (cellOccupied)`, not an inline predicate.
-- add newlines before/after multiline expressions, code blocks, before return statements, etc;
+- add newlines before/after multiline expressions, code blocks, before return statements, etc.
+- prefer `for...of` loop over `forEach` when index is not required.
 
 ## Commands
 

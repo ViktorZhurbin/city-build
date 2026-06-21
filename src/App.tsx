@@ -1,21 +1,21 @@
 import { createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 import "./App.css";
-import { CELL_COUNT, STARTING_MONEY } from "./CONFIG";
+import { STARTING_MONEY } from "./CONFIG";
 import { Grid } from "./components/Grid";
 import { Hud } from "./components/Hud";
 import { Toolbar } from "./components/Toolbar";
-import { demolish, place } from "./logic/place";
-import { contributions } from "./logic/simulation";
-import { stats } from "./logic/stats";
-import { clearCity, loadCity, saveCity } from "./logic/storage";
-import { tick } from "./logic/tick";
-import type { Building, City, Tool } from "./types";
+import { demolish, place, tick } from "./game/reducers";
+import { resolve } from "./game/resolve";
+import { toCells, toCityStats } from "./game/selectors";
+import { type City, emptyBuildings } from "./game/state";
+import { clearCity, loadCity, saveCity } from "./game/storage";
+import type { Tool } from "./types";
 
 const freshCity = (): City => ({
 	money: STARTING_MONEY,
-	buildings: [],
 	tick: 0,
+	buildings: emptyBuildings(),
 });
 
 const App = () => {
@@ -31,22 +31,17 @@ const App = () => {
 	const [speed, setSpeed] = createSignal(1);
 	const BASE_TICK_MS = 1500;
 
-	const cells = createMemo<(Building | undefined)[]>(() => {
-		const slots: (Building | undefined)[] = new Array(CELL_COUNT);
+	// One resolved snapshot per change drives everything downstream — the HUD
+	// totals, the per-cell buildings, and tick's money settle. createMemo is the
+	// selector cache, so the sim resolves at most once per change.
+	const resolved = createMemo(() => resolve(city.buildings));
 
-		for (const b of city.buildings) {
-			slots[b.pos] = b;
-		}
+	const cityStats = createMemo(() => toCityStats(resolved(), city));
 
-		return slots;
-	});
-
-	const cityStats = createMemo(() => stats(city));
-
-	// Live per-building numbers (population, upkeep, served customers, revenue)
-	// keyed by cell — feeds each tile's tooltip. Recomputed whenever buildings
-	// change, since served customers depend on the whole city, not one tile.
-	const tileStats = createMemo(() => contributions(city.buildings));
+	// Cell-indexed buildings, each fully resolved (flags + live numbers), so a
+	// tile reads everything it needs — including its tooltip stats — from one
+	// object.
+	const cells = createMemo(() => toCells(resolved()));
 
 	// Re-runs whenever speed changes: clears the old interval (via onCleanup) and
 	// starts one at the new rate, or none at all when paused.
@@ -55,14 +50,14 @@ const App = () => {
 		if (currentSpeed === 0) return;
 
 		const id = setInterval(() => {
-			setCity(reconcile(tick(unwrap(city)), { key: "pos" }));
+			setCity(reconcile(tick(unwrap(city))));
 		}, BASE_TICK_MS / currentSpeed);
 		onCleanup(() => clearInterval(id));
 	});
 
 	function handleReset() {
 		clearCity();
-		setCity(reconcile(freshCity(), { key: "pos" }));
+		setCity(reconcile(freshCity()));
 		setSelected(null);
 	}
 
@@ -76,7 +71,7 @@ const App = () => {
 			tool === "demolish" ? demolish(current, pos) : place(current, tool, pos);
 
 		if (next !== current) {
-			setCity(reconcile(next, { key: "pos" }));
+			setCity(reconcile(next));
 			// Placing deselects (one building per pick); the bulldozer stays armed
 			// so you can clear several tiles in a row.
 			if (tool !== "demolish") setSelected(null);
@@ -98,7 +93,6 @@ const App = () => {
 			/>
 			<Grid
 				cells={cells()}
-				stats={tileStats()}
 				selected={selected()}
 				onTileClick={handleTileClick}
 			/>
