@@ -1,6 +1,7 @@
 import "./Hud.css";
 import type { CityStats } from "@/game/selectors";
 import { Money } from "./Money";
+import { Stat } from "./Stat";
 import { TimeControl } from "./TimeControl";
 
 export function Hud(props: {
@@ -26,10 +27,7 @@ export function Hud(props: {
 				<span class="hud-label">H₂O</span>
 				{props.stats.waterSupply}/{props.stats.waterDemand}
 			</span>
-			<span class="hud-item">
-				<span class="hud-label">POP</span>
-				{props.stats.population}
-			</span>
+			<Stat icon="👥" value={props.stats.population} />
 			<span class="hud-item">
 				<span class="hud-label">JOBS</span>
 				{props.stats.jobs}

@@ -1,13 +1,13 @@
 import "./Money.css";
+import { Stat } from "./Stat";
 
 export function Money(props: { money: number; dailyBudget: number }) {
 	return (
-		<span class="money">
-			<span>${props.money}</span>
+		<Stat icon="$" value={props.money}>
 			<span class="money-budget" data-trend={budgetTrend(props.dailyBudget)}>
 				{props.dailyBudget > 0 ? `+${props.dailyBudget}` : props.dailyBudget}
 			</span>
-		</span>
+		</Stat>
 	);
 }
 
