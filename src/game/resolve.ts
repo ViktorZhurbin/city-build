@@ -27,8 +27,16 @@ export interface ResolvedBuilding extends Building {
 	upkeep: number; // utilities only
 }
 
-export function isOnline(building?: ResolvedBuilding): boolean {
-	return !!building && building.powered && building.watered;
+export function isBuildingOnline(building: ResolvedBuilding): boolean {
+	return building.powered && building.watered;
+}
+
+function isStoreOnline(building: ResolvedBuilding) {
+	return building.type === "store" && isBuildingOnline(building);
+}
+
+function isHouseOnline(building: ResolvedBuilding) {
+	return building.type === "house" && isBuildingOnline(building);
 }
 
 // Why a building underperforms, derived from the resolved state.
@@ -51,11 +59,11 @@ export function buildingIssues(building: ResolvedBuilding): BuildingIssue[] {
 		issues.push("water");
 	}
 
-	const isStoreOnline = building.type === "store" && isOnline(building);
+	const storeOnline = isStoreOnline(building);
 
-	if (isStoreOnline && !building.staffed) {
+	if (storeOnline && !building.staffed) {
 		issues.push("noWorkers");
-	} else if (isStoreOnline && building.customers === 0) {
+	} else if (storeOnline && building.customers === 0) {
 		issues.push("noCustomers");
 	}
 
@@ -151,9 +159,7 @@ export function resolve(buildings: Buildings): Resolved {
 	let population = 0;
 
 	for (const building of resolvedBuildings) {
-		const isHouseOnline = building.type === "house" && isOnline(building);
-
-		if (isHouseOnline) {
+		if (isHouseOnline(building)) {
 			building.population = BUILDINGS.house.population;
 			population += BUILDINGS.house.population;
 		}
@@ -166,13 +172,13 @@ export function resolve(buildings: Buildings): Resolved {
 	let jobs = 0;
 
 	for (const building of resolvedBuildings) {
-		const isStoreOnline = building.type === "store" && isOnline(building);
+		const storeOnline = isStoreOnline(building);
 
-		if (isStoreOnline) {
+		if (storeOnline) {
 			jobs += BUILDINGS.store.jobsNeeded;
 		}
 
-		const staffed = isStoreOnline && labourLeft >= BUILDINGS.store.jobsNeeded;
+		const staffed = storeOnline && labourLeft >= BUILDINGS.store.jobsNeeded;
 
 		if (staffed) {
 			labourLeft -= BUILDINGS.store.jobsNeeded;

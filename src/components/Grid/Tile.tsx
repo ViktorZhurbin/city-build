@@ -4,7 +4,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { Tooltip } from "@/components/ui/Tooltip";
 import {
 	buildingIssues,
-	isOnline,
+	isBuildingOnline,
 	type ResolvedBuilding,
 } from "@/game/resolve";
 import type { BuildingType } from "@/game/state";
@@ -42,7 +42,7 @@ export function Tile(props: {
 				class="tile"
 				data-type={props.building?.type ?? "empty"}
 				data-offline={
-					props.building && !isOnline(props.building) ? "true" : "false"
+					props.building && !isBuildingOnline(props.building) ? "true" : "false"
 				}
 				onClick={() => props.onClick(props.pos)}
 			>
