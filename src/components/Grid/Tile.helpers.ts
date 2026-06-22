@@ -1,4 +1,4 @@
-import { BUILDINGS } from "@/game/balance";
+import { BUILDINGS, TAX_RATE } from "@/game/balance";
 import {
 	type BuildingIssue,
 	buildingIssues,
@@ -61,7 +61,7 @@ export function tileStats(building: ResolvedBuilding): StatLine[] {
 			lines.push({ label: "Revenue", value: `$${building.revenue}/day` });
 			lines.push({
 				label: "Tax / customer",
-				value: `$${BUILDINGS.store.taxPerCustomer}`,
+				value: `$${TAX_RATE}`,
 			});
 			break;
 		case "power":

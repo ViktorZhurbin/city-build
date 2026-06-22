@@ -3,7 +3,7 @@ import { ToggleGroup } from "@kobalte/core/toggle-group";
 import { Index } from "solid-js";
 import { StatCard, type StatLine } from "@/components/ui/StatCard";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { BUILDINGS, DEMOLISH_REFUND } from "@/game/balance";
+import { BUILDINGS, DEMOLISH_REFUND, TAX_RATE } from "@/game/balance";
 import type { BuildingType } from "@/game/state";
 import type { Tool } from "@/game/types";
 
@@ -101,7 +101,7 @@ function buildingStats(type: BuildingType): StatLine[] {
 			});
 			lines.push({
 				label: "Tax / customer",
-				value: `$${BUILDINGS.store.taxPerCustomer}`,
+				value: `$${TAX_RATE}`,
 			});
 			break;
 		case "power":

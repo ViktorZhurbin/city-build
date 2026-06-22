@@ -14,6 +14,13 @@ export const TICK_MS = 1500;
 // overbuilding still stings.
 export const DEMOLISH_REFUND = 0.5;
 
+// Income is one multiply: total customers served × this rate. A store's
+// `customersServed` (capped by population) is HOW MUCH commerce happens; this is
+// HOW MUCH of it the city takes. One city-wide number, not a per-store field.
+// Later: expose it as a player-set slider — the core income-vs-growth dial, where
+// a higher rate raises revenue per customer but suppresses demand/growth.
+export const TAX_RATE = 6;
+
 // --- Tuning knobs. This table IS the game's balance. ---
 // Everything interesting lives here; tweak numbers, not logic.
 export const BUILDINGS = {
@@ -31,12 +38,10 @@ export const BUILDINGS = {
 		population: 0,
 		jobsNeeded: 3,
 		// Commerce is demand-bound: a store serves up to `customersServed`
-		// people (capped by total population), earning `taxPerCustomer` each
-		// per day. Tax is fixed for now. Later: expose it as a player-set rate
-		// slider — the core income-vs-growth dial, where a higher rate raises
-		// revenue but suppresses demand/growth.
+		// people (capped by total population). Income is `customers × TAX_RATE`
+		// (see above) — staffing/utilities gate WHETHER a store serves customers,
+		// not the per-customer take.
 		customersServed: 4,
-		taxPerCustomer: 6,
 	},
 	power: {
 		cost: 200,

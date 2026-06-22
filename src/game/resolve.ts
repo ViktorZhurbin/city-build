@@ -1,4 +1,4 @@
-import { BUILDINGS } from "@/game/balance";
+import { BUILDINGS, TAX_RATE } from "@/game/balance";
 import { type Building, type Buildings, selectAll } from "@/game/state";
 
 // The engine. `resolve` runs the whole physical simulation as ONE pure pass over
@@ -23,7 +23,7 @@ export interface ResolvedBuilding extends Building {
 	staffed: boolean; // stores only: online (powered + watered) AND has workers
 	population: number; // houses only
 	customers: number; // stores only: served this tick
-	revenue: number; // stores only: customers × tax
+	revenue: number; // stores only: customers × TAX_RATE
 	upkeep: number; // utilities only
 }
 
@@ -201,7 +201,7 @@ export function resolve(buildings: Buildings): Resolved {
 
 		shoppersLeft -= served;
 		building.customers = served;
-		building.revenue = served * BUILDINGS.store.taxPerCustomer;
+		building.revenue = served * TAX_RATE;
 		customersServed += served;
 	}
 
@@ -226,7 +226,7 @@ export function resolve(buildings: Buildings): Resolved {
 			population,
 			customersServed,
 			upkeep,
-			revenue: customersServed * BUILDINGS.store.taxPerCustomer,
+			revenue: customersServed * TAX_RATE,
 		},
 	};
 }
