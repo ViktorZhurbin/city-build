@@ -1,6 +1,15 @@
 export const GRID_SIZE = 10;
 export const CELL_COUNT = GRID_SIZE * GRID_SIZE;
 export const STARTING_MONEY = 1000;
+export const STARTING_POPULATION = 0;
+
+// Population is a living stock, not an instant figure. Each day it drifts toward
+// the city's housing capacity (sum of online houses): people move in gradually
+// when there's room, and move OUT when capacity drops below them (a brownout or a
+// bulldozed plant takes houses offline). Decline outpaces growth — cities empty
+// faster than they fill. Both are bounded per day so the city breathes.
+export const POPULATION_GROWTH_PER_DAY = 2;
+export const POPULATION_DECLINE_PER_DAY = 4;
 
 // The economy settles once per "day"; ticks in between only run the physical
 // sim (power/water/jobs). For now a day is a bare counter. Later: surface a

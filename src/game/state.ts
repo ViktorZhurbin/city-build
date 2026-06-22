@@ -25,6 +25,10 @@ export interface Buildings {
 export interface City {
 	money: number;
 	tick: number; // ticks elapsed; the budget settles every TICKS_PER_DAY
+	// The living population stock. Unlike everything else here it is NOT derived
+	// from the buildings — it has history, drifting toward housing capacity each
+	// day (see `tick` in reducers.ts). Stored because it depends on its own past.
+	population: number;
 	buildings: Buildings;
 }
 

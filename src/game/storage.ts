@@ -4,7 +4,8 @@ import type { City } from "@/game/state";
 // needed. The version suffix is bumped whenever the City shape changes
 // incompatibly, so stale saves are ignored rather than loaded into a mismatched
 // schema. v2: buildings are normalized ({ ids, entities }) and carry no sim flags.
-const STORAGE_KEY = "city-build-it:v2";
+// v3: City carries a stored `population` stock (drifts toward housing capacity).
+const STORAGE_KEY = "city-build-it:v3";
 
 export function saveCity(city: City): void {
 	try {
@@ -32,6 +33,7 @@ export function loadCity(): City | null {
 		const looksValid =
 			typeof parsed.money === "number" &&
 			typeof parsed.tick === "number" &&
+			typeof parsed.population === "number" &&
 			!!buildings &&
 			Array.isArray(buildings.ids) &&
 			!!buildings.entities &&

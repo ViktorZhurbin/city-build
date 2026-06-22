@@ -24,7 +24,9 @@ export function Hud(props: {
 					money={props.stats.money}
 					dailyBudget={props.stats.dailyBudget}
 				/>
-				<Stat icon="👥" value={props.stats.population} />
+				<Stat icon="👥" value={props.stats.population}>
+					<span class="hud-capacity">/ {props.stats.capacity}</span>
+				</Stat>
 			</div>
 
 			<Show when={import.meta.env.DEV}>

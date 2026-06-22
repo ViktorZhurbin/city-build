@@ -7,12 +7,14 @@ import { type Building, type Buildings, selectAll } from "@/game/state";
 // settle) and the read path (the HUD + tile tooltips) consume this, so the rules
 // live here and nowhere else.
 //
-// The sim is a chain of sequential greedy passes — power → water → population →
+// The sim is a chain of sequential greedy passes — power → water → capacity →
 // jobs → customers. Each must fully settle before the next (water needs power
-// done; jobs needs the population total), so each is its own walk over the
-// buildings in placement order, handing out a pool until it runs out: atomic
-// (all-or-nothing: power/water/jobs) or divisible (partial fills: customers).
-// Every pass reads the flags the prior set and writes its own onto the building.
+// done), so each is its own walk over the buildings in placement order, handing
+// out a pool until it runs out: atomic (all-or-nothing: power/water/jobs) or
+// divisible (partial fills: customers). Every pass reads the flags the prior set
+// and writes its own onto the building. The living `population` stock is an INPUT
+// (it has history; see reducers.ts) — the houses pass only derives the capacity
+// it drifts toward; jobs and customers draw on the stock itself.
 
 // A building after the sim has run: its durable facts plus everything derived
 // this tick. All numbers are *live* — an offline house reads population 0, an
@@ -21,7 +23,7 @@ export interface ResolvedBuilding extends Building {
 	powered: boolean;
 	watered: boolean;
 	staffed: boolean; // stores only: online (powered + watered) AND has workers
-	population: number; // houses only
+	population: number; // houses only: the capacity this house contributes
 	customers: number; // stores only: served this tick
 	revenue: number; // stores only: customers × TAX_RATE
 	upkeep: number; // utilities only
@@ -75,7 +77,8 @@ export interface CityTotals {
 	powerDemand: number;
 	waterSupply: number;
 	waterDemand: number;
-	population: number;
+	population: number; // the living stock (resolve's input), what jobs/customers draw on
+	capacity: number; // housing ceiling: people online houses can hold, the stock's target
 	jobs: number; // offered by online stores (the labour they'd draw if staffed)
 	customersServed: number;
 	revenue: number;
@@ -90,7 +93,7 @@ export interface Resolved {
 	totals: CityTotals;
 }
 
-export function resolve(buildings: Buildings): Resolved {
+export function resolve(buildings: Buildings, population: number): Resolved {
 	// Working copies in placement order. The sim is a chain of sequential greedy
 	// passes: each is one walk over this list, reading the flags the prior pass
 	// set and writing its own straight onto the building. Placement order is the
@@ -154,20 +157,21 @@ export function resolve(buildings: Buildings): Resolved {
 		waterDemand += waterUse;
 	}
 
-	// 3. Population — houses with BOTH utilities make people. This same pool both
-	//    staffs stores (jobs) and shops at them (customers).
-	let population = 0;
+	// 3. Capacity — houses with BOTH utilities can hold people. This is the
+	//    CEILING the living population (passed in) drifts toward each day; it is
+	//    NOT the figure that shops/works. That's the stock below.
+	let capacity = 0;
 
 	for (const building of resolvedBuildings) {
 		if (isHouseOnline(building)) {
 			building.population = BUILDINGS.house.population;
-			population += BUILDINGS.house.population;
+			capacity += BUILDINGS.house.population;
 		}
 	}
 
-	// 4. Jobs — supplied stores claim workers greedily; once labour runs out, the
-	//    rest sit idle. `jobs` is the labour supplied stores *offer* (what they'd
-	//    draw if fully staffed).
+	// 4. Jobs — the living population staffs supplied stores greedily; once labour
+	//    runs out, the rest sit idle. `jobs` is the labour supplied stores *offer*
+	//    (what they'd draw if fully staffed).
 	let labourLeft = population;
 	let jobs = 0;
 
@@ -187,8 +191,9 @@ export function resolve(buildings: Buildings): Resolved {
 		building.staffed = staffed;
 	}
 
-	// 5. Customers — the same population shops, handed out greedily across staffed
-	//    stores (divisible: a store serves up to customersServed, partial allowed).
+	// 5. Customers — the same living population shops, handed out greedily across
+	//    staffed stores (divisible: a store serves up to customersServed, partial
+	//    allowed).
 	let shoppersLeft = population;
 	let customersServed = 0;
 
@@ -224,6 +229,7 @@ export function resolve(buildings: Buildings): Resolved {
 			waterDemand,
 			jobs,
 			population,
+			capacity,
 			customersServed,
 			upkeep,
 			revenue: customersServed * TAX_RATE,

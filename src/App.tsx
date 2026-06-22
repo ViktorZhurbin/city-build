@@ -4,7 +4,7 @@ import { createStore, reconcile, unwrap } from "solid-js/store";
 import { Grid } from "@/components/Grid/Grid";
 import { Hud } from "@/components/Hud/Hud";
 import { Toolbar } from "@/components/Toolbar/Toolbar";
-import { STARTING_MONEY, TICK_MS } from "@/game/balance";
+import { STARTING_MONEY, STARTING_POPULATION, TICK_MS } from "@/game/balance";
 import { demolish, place, tick } from "@/game/reducers";
 import { resolve } from "@/game/resolve";
 import { toCells, toCityStats } from "@/game/selectors";
@@ -15,6 +15,7 @@ import type { Tool } from "@/game/types";
 const freshCity = (): City => ({
 	tick: 0,
 	money: STARTING_MONEY,
+	population: STARTING_POPULATION,
 	buildings: emptyBuildings(),
 });
 
@@ -33,7 +34,7 @@ const App = () => {
 	// One resolved snapshot per change drives everything downstream — the HUD
 	// totals, the per-cell buildings, and tick's money settle. createMemo is the
 	// selector cache, so the sim resolves at most once per change.
-	const resolved = createMemo(() => resolve(city.buildings));
+	const resolved = createMemo(() => resolve(city.buildings, city.population));
 
 	const cityStats = createMemo(() => toCityStats(resolved(), city));
 

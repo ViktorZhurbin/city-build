@@ -1,4 +1,10 @@
-import { BUILDINGS, DEMOLISH_REFUND, TICKS_PER_DAY } from "@/game/balance";
+import {
+	BUILDINGS,
+	DEMOLISH_REFUND,
+	POPULATION_DECLINE_PER_DAY,
+	POPULATION_GROWTH_PER_DAY,
+	TICKS_PER_DAY,
+} from "@/game/balance";
 import { resolve } from "@/game/resolve";
 import {
 	addOne,
@@ -46,9 +52,25 @@ export function demolish(city: City, pos: number): City {
 	};
 }
 
+// Each day population drifts one bounded step toward the housing capacity: it
+// fills empty homes slowly, and empties faster when capacity has dropped below it
+// (a brownout or a bulldozed plant). The only place the stored stock advances.
+function driftPopulation(population: number, capacity: number): number {
+	if (population < capacity) {
+		return Math.min(capacity, population + POPULATION_GROWTH_PER_DAY);
+	}
+
+	if (population > capacity) {
+		return Math.max(capacity, population - POPULATION_DECLINE_PER_DAY);
+	}
+
+	return population;
+}
+
 // The clock. Most ticks only advance the counter — the physical sim is derived
-// (via `resolve`) wherever it's read, not stored here. The budget settles ONCE
-// per day: on the boundary we resolve the city and apply revenue − upkeep.
+// (via `resolve`) wherever it's read, not stored here. On the day boundary two
+// stored things settle from the resolved totals: money (revenue − upkeep) and the
+// population stock (one drift step toward capacity).
 // (Later: loans — borrow now against future days, repaid with interest here.)
 export function tick(city: City): City {
 	const nextTick = city.tick + 1;
@@ -58,11 +80,12 @@ export function tick(city: City): City {
 		return { ...city, tick: nextTick };
 	}
 
-	const { totals } = resolve(city.buildings);
+	const { totals } = resolve(city.buildings, city.population);
 
 	return {
 		...city,
 		tick: nextTick,
 		money: city.money + totals.revenue - totals.upkeep,
+		population: driftPopulation(city.population, totals.capacity),
 	};
 }

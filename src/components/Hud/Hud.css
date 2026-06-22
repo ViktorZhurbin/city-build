@@ -22,6 +22,13 @@
 	gap: 16px;
 }
 
+/* The housing ceiling the population stock drifts toward — muted, it's context
+   for the live figure beside it (people still moving in vs. city full). */
+.hud-capacity {
+	opacity: 0.55;
+	font-size: var(--font-sm);
+}
+
 .hud-reset {
 	margin-left: auto;
 	height: var(--hud-segment-height);

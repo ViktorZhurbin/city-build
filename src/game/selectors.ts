@@ -13,6 +13,7 @@ export interface CityStats {
 	waterSupply: number;
 	waterDemand: number;
 	population: number;
+	capacity: number;
 	jobs: number;
 	dailyBudget: number; // revenue − upkeep, applied once per day
 	day: number; // 1-based; the day currently in progress
@@ -32,6 +33,7 @@ export const toCityStats = (resolved: Resolved, city: City): CityStats => {
 		waterSupply: totals.waterSupply,
 		waterDemand: totals.waterDemand,
 		population: totals.population,
+		capacity: totals.capacity,
 		jobs: totals.jobs,
 		dailyBudget: totals.revenue - totals.upkeep,
 		day: Math.floor(tick / TICKS_PER_DAY) + 1,
